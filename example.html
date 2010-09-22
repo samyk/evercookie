@@ -1,0 +1,42 @@
+<html>
+<head>
+<title>Evercookie - unforgettable cookies</title>
+<script type="text/javascript" src="evercookie.js"></script>
+</head>
+
+<body>
+<pre>
+<script> 
+var val = "573";
+var ec = new evercookie();
+ 
+getC(1);
+//setTimeout(getC, 500, 1);
+ 
+function getC(dont)
+{
+	ec.get("uid", function(best, all) {
+		document.getElementById('idtag').innerHTML = best;
+		var txt = document.getElementById('cookies');
+		for (var item in all)
+			txt.innerHTML += item + ' mechanism: ' + (val == all[item] ? '<b>' + all[item] + '</b>' : all[item]) + '<br>';
+	}, dont);
+}
+</script> 
+    <b>Cookie found:</b> <i>uid</i> = <span id='idtag'>currently not set</span> 
+ 
+    Click to create an evercookie. Don't worry, the cookie is a
+    random number between 1 and 1000, not enough for me to track
+    you, just enough to test evercookies.
+    <input type=button value="Click to create an evercookie" onClick="document.getElementById('idtag').innerHTML = '*creating*'; document.getElementById('cookies').innerHTML = ''; ec.set('uid', val); setTimeout(getC, 1000, 1); "> 
+ 
+    <div id='cookies'></div> 
+    Now, try deleting this "uid" cookie anywhere possible, then
+    <input type=button value="Click to rediscover cookies" onClick="document.getElementById('idtag').innerHTML = '*checking*'; document.getElementById('cookies').innerHTML = ''; setTimeout(getC, 300);"> 
+      or 
+    <input type=button value="Click to rediscover cookies WITHOUT reactivating deleted cookies" onClick="document.getElementById('idtag').innerHTML = '*checking*'; document.getElementById('cookies').innerHTML = ''; setTimeout(getC, 300, 1);"> 
+ 
+</PRE> 
+
+</body>
+</html>

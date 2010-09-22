@@ -1,0 +1,15 @@
+evercookie 0.2 -- never forget.
+by samy kamkar, 09/20/2010
+http://samy.pl : code@samy.pl
+
+The only files that need to be in your web directory are:
+ evercookie.js
+ evercookie.php
+ evercookie.swf
+
+If evercookie.php is missing or your server doesn't have PHP
+support, evercookie will still function but without support
+for auto-generated PNG caching.
+
+If evercookie.swf is missing, evercookie will still function,
+but without support for Local Shared Objects (Flash Cookies).
