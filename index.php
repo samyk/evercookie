@@ -1,6 +1,8 @@
 <html>
 <head>
 <link rel="stylesheet" href="master.css" type="text/css">
+<script type="text/javascript" src="jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="swfobject-2.2.min.js"></script>
 <script type="text/javascript" src="evercookie.js"></script>
 <title>evercookie - virtually irrevocable persistent cookies</title>
 </head>
@@ -14,6 +16,7 @@
 <a href="http://samy.pl">samy's home page</a> || <a href="http://twitter.com/samykamkar">follow my twitter</a> || <a href="http://namb.la">blog</a> || <a href="mailto:code@samy.pl">email me</a> || samy kamkar<hr>
 
 <h1>evercookie <small>-- never forget.</small></h1>
+09/23/2010: <font color=red>new version with ETag and userData support!</font></nobr>
 <PRE>
 
 </PRE>
@@ -36,7 +39,9 @@
      - <a href="http://en.wikipedia.org/wiki/Local_Shared_Object">Local Shared Objects</a> (Flash Cookies)
      - Storing cookies in RGB values of auto-generated, force-cached 
         PNGs using HTML5 Canvas tag to read pixels (cookies) back out
-     - Storing cookies in <a href="http://samy.pl/csshack/">Web History</a> (seriously. see FAQ)
+     - Storing cookies in and reading out <a href="http://samy.pl/csshack/">Web History</a>
+     - Storing cookies in HTTP <a href="http://en.wikipedia.org/wiki/HTTP_ETag">ETags</a>
+     - Internet Explorer <a href="http://msdn.microsoft.com/en-us/library/ms531424(VS.85).aspx">userData</a> storage
      - HTML5 <a href="http://dev.w3.org/html5/webstorage/#the-sessionstorage-attribute">Session Storage</a>
      - HTML5 <a href="http://dev.w3.org/html5/webstorage/#dom-localstorage">Local Storage</a>
      - HTML5 <a href="https://developer.mozilla.org/en/dom/storage#globalStorage">Global Storage</a>
@@ -44,7 +49,6 @@
 
     TODO:</b> adding support for:
      - Silverlight <a href="http://www.silverlight.net/learn/quickstarts/isolatedstorage/">Isolated Storage</a>
-     - HTTP <a href="http://en.wikipedia.org/wiki/HTTP_ETag">ETags</a>
      - <a href="http://en.wikipedia.org/wiki/HTTP_cookie#window.name">window.name</a> caching
      - Using Java to produce a unique key based off of NIC info
 
@@ -83,13 +87,15 @@ function getC(dont)
     <input type=button value="Click to rediscover cookies WITHOUT reactivating deleted cookies" onClick="document.getElementById('idtag').innerHTML = '*checking*'; document.getElementById('cookies').innerHTML = ''; setTimeout(getC, 300, 1);">
 
 </PRE>
-<H2><a href="evercookie-0.2.tgz">DOWNLOAD</a></H2><PRE>
+<H2><a href="evercookie-0.3.tgz">DOWNLOAD</a></H2><PRE>
     <I>evercookie</I> is written in JavaScript and additionally
     uses a SWF (Flash) object for the Local Shared Objects and
-    PHP for the server-side generation of cached PNGs.
+    PHPs for the server-side generation of cached PNGs and ETags.
 
-    <B>v0.2 BETA</B>, released 09/22/2010
-            download source <a href="evercookie-0.2.tgz">here</a>
+    <B>v0.3 BETA</B>, released 09/23/2010
+            download source <a href="evercookie-0.3.tgz">here</a>
+
+    Or get it from github: <a href="http://github.com/samyk/evercookie">http://github.com/samyk/evercookie</a>
 
 </PRE>
 <H2>FAQ</H2><PRE>
@@ -107,7 +113,7 @@ function getC(dont)
 
 	<b>What if the user deletes their cookies?</b>
 	That's the great thing about evercookie. With all the methods available,
-	currently eight, it only takes one cookie to remain for most, if not all,
+	currently ten, it only takes one cookie to remain for most, if not all,
 	of them to be reset again.
 
 	For example, if the user deletes their standard HTTP cookies, LSO data,
@@ -129,19 +135,19 @@ function getC(dont)
 	The server must at least have access to the JavaScript evercookie file.
 	Additionally, to use Local Shared Object (Flash Cookies) storage, the
 	evercookie.swf file must be present, and to use the auto-generated PNG
-	caching storage mechanism, PHP must be on the server and evercookie.php
-	must be installed.
+	caching and ETag storage mechanisms, PHP must be on the server and
+	evercookie_png.php and evercookie_etag.php must be installed.
 
 	All of these are available in the download.
 
 	<b>Is evercookie open source?</b>
 	Yes, evercookie is open source. The code is in readable format without
-	any obfuscation. Additionally, the PHP file is open source as is the
+	any obfuscation. Additionally, the PHP files are open source as is the
 	FLA (Flash) code used to generate the SWF Flash object. You can compile
 	the Flash object yourself or use the pre-compiled version (evercookie.swf).
 
 	<b>How does the PNG caching work?</b>
-	When evercookie sets a cookie, it accesses evercookie.php with a special
+	When evercookie sets a cookie, it accesses evercookie_png.php with a special
 	HTTP cookie, different than the one used for standard session data. This
 	special cookie is read by the PHP file, and if found, generates a PNG file
 	where all the RGB values are set to the equivalent of the session data to
@@ -177,7 +183,9 @@ function getC(dont)
 	reached the end of the string as soon as it finds a URL that ends in "-".
 </PRE>
 <H2>USAGE</H2><PRE>
-    <b>&lt;script type="text/javascript" src="evercookie.js"&gt;&lt;/script&gt;
+    <b>&lt;script type="text/javascript" src="jquery-1.4.2.min.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" src="swfobject-2.2.min.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" src="evercookie.js"&gt;&lt;/script&gt;
 
     &lt;script&gt;
     var ec = new evercookie();</b>

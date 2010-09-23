@@ -1,0 +1,6 @@
+evercookie 0.3 :: 09/23/2010
+	- added ETag storage support
+	- added IE userData storage support
+	- added jquery
+	- various bug fixes
+	- speed enhancements

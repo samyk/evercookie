@@ -1,5 +1,5 @@
 /*
- * evercookie 0.2 (09/20/2010) -- extremely persistent cookies
+ * evercookie 0.3 (09/20/2010) -- extremely persistent cookies
  *
  *  by samy kamkar : code@samy.pl : http://samy.pl
  *
@@ -10,6 +10,8 @@
  *  - standard http cookies
  *  - flash cookies (local shared objects)
  *  - png generation w/forced cache and html5 canvas pixel reading
+ *  - http etags
+ *  - IE userData
  *  - html5 session cookies
  *  - html5 local storage
  *  - html5 global storage
@@ -61,9 +63,10 @@
 
 /* to turn off CSS history knocking, set _ec_history to 0 */
 var _ec_history = 1; // CSS history knocking or not .. can be network intensive
+var _ec_tests = 10;
 var _ec_debug = 0;
 
-function _dump(arr, level)
+function _ec_dump(arr, level)
 {
 	var dumped_text = "";
 	if(!level) level = 0;
@@ -78,7 +81,7 @@ function _dump(arr, level)
 			
 			if(typeof(value) == 'object') { //If it is an array,
 				dumped_text += level_padding + "'" + item + "' ...\n";
-				dumped_text += dump(value,level+1);
+				dumped_text += _ec_dump(value,level+1);
 			} else {
 				dumped_text += level_padding + "'" + item + "' => \"" + value + "\"\n";
 			}
@@ -89,6 +92,7 @@ function _dump(arr, level)
 	return dumped_text;
 }
 
+
 // necessary for flash to communicate with js...
 // please implement a better way
 var _global_lso;
@@ -97,57 +101,51 @@ function _evercookie_flash_var(cookie)
 	_global_lso = cookie;
 
 	// remove the flash object now
-	var swf = document.getElementById('myswf');
-	if (swf)
+	var swf = $('#myswf');
+	if (swf && swf.parentNode)
 		swf.parentNode.removeChild(swf);
 }
 
 var evercookie = (function () {
 this._class = function() {
+
 var self = this;
 // private property
 _baseKeyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-
 this._ec = {};
-
 var no_color = -1;
+
 this.get = function(name, cb, dont_reset)
 {
-	this._evercookie(name, cb, undefined, undefined, dont_reset);
+	$(document).ready(function() {
+		self._evercookie(name, cb, undefined, undefined, dont_reset);
+	});
 }
+
 this.set = function(name, value)
 {
-	this._evercookie(name, function() { }, value);
+	$(document).ready(function() {
+			self._evercookie(name, function() { }, value);
+	});
 }
 
 this._evercookie = function(name, cb, value, i, dont_reset)
 {
-	if (typeof self.createLso == 'undefined')
+	if (typeof self._evercookie == 'undefined')
 		self = this;
-	
-	// wait for body to load
-	if (typeof document.body == 'undefined')
-	{
-		setTimeout(self._evercookie, 300, name, cb, value, i);
-		return;
-	}
 	
 	if (typeof i == 'undefined')
 		i = 0;
 
-	if (typeof swfobject == 'undefined')
-		self.addJavascript('swfobject.js', 'body');
-
-	if (typeof _global_lso == 'undefined')
-		self.createLso(name, value);
-		
 	// first run
 	if (i == 0)
 	{
 		self.evercookie_database_storage(name, value);
 		self.evercookie_png(name, value);
 		self.evercookie_etag(name, value);
+		self.evercookie_lso(name, value);
 
+		self._ec.userData = self.evercookie_userdata(name, value);
 		self._ec.cookieData = self.evercookie_cookie(name, value);
 		self._ec.localData = self.evercookie_local_storage(name, value);
 		self._ec.globalData = self.evercookie_global_storage(name, value);
@@ -160,7 +158,7 @@ this._evercookie = function(name, cb, value, i, dont_reset)
 	// when writing data, we need to make sure lso object is there
 	if (typeof value != 'undefined')
 	{
-		if (typeof _global_lso == 'undefined' && i++ < 10)
+		if (typeof _global_lso == 'undefined' && i++ < _ec_tests)
 			setTimeout(self._evercookie, 300, name, cb, value, i);
 	}
 	
@@ -172,10 +170,11 @@ this._evercookie = function(name, cb, value, i, dont_reset)
 				// we support local db and haven't read data in yet
 				(window.openDatabase && typeof self._ec.dbData == 'undefined') ||
 				(typeof _global_lso == 'undefined') ||
+				(typeof self._ec.etagData == 'undefined') ||
 				(document.createElement('canvas').getContext && (typeof self._ec.pngData == 'undefined' || self._ec.pngData == ''))
 			)
 			&&
-			i++ < 10
+			i++ < _ec_tests
 		)
 		{
 			setTimeout(self._evercookie, 300, name, cb, value, i);
@@ -184,12 +183,10 @@ this._evercookie = function(name, cb, value, i, dont_reset)
 		// we hit our max wait time or got all our data
 		else
 		{
+			// get just the piece of data we need from swf
 			self._ec.lsoData = self.getFromStr(name, _global_lso);
 			_global_lso = undefined;
-			if (self._ec.pngData && self._ec.pngData.indexOf(name + '=') >= 0)
-				self._ec.pngData = self.getFromStr(name, self._ec.pngData);
-			else
-				self._ec.pngData = undefined;
+
 			var tmpec = self._ec;
 			self._ec = {};
 			
@@ -199,7 +196,8 @@ this._evercookie = function(name, cb, value, i, dont_reset)
 			var candidate;
 			for (var item in tmpec)
 			{
-				if (typeof tmpec[item] != 'undefined')
+				if (typeof tmpec[item] != 'undefined' && typeof tmpec[item] != 'null' &&
+				  tmpec[item] != 'null' && tmpec[item] != 'undefined')
 					candidates[tmpec[item]] = typeof candidates[tmpec[item]] == 'undefined' ? 1 : candidates[tmpec[item]] + 1;
 			}
 			
@@ -222,21 +220,23 @@ this._evercookie = function(name, cb, value, i, dont_reset)
 	}
 }
 
-this.createDiv = function(id)
+this.evercookie_userdata = function(name, value)
 {
-	var el = document.getElementById(id);
-	if (!el)
-	{
-		el = document.createElement("div");
-		el.setAttribute('id', id);
-		document.body.appendChild(el);
-	}
-	return el;
-}
+	try {
+		var elm = this.createElem('div', 'userdata_el', 1);
+		elm.style.behavior = "url(#default#userData)";
 
-this.ajax_request = function(url)
-{
-	
+		if (typeof(value) != "undefined")
+		{
+			elm.setAttribute(name, value);
+			elm.save(name);
+		}
+		else
+		{
+			elm.load(name);
+			return elm.getAttribute(name);
+		}
+	} catch(e) { }
 }
 
 this.evercookie_etag = function(name, value)
@@ -244,58 +244,54 @@ this.evercookie_etag = function(name, value)
 	if (typeof(value) != "undefined")
 	{
 		// make sure we have evercookie session defined first
-		document.cookie = 'evercookie=' + name + '=' + value;
+		document.cookie = 'evercookie_etag=' + value;
 		
-		// evercookie.php handles the hard part of generating the image
-		// based off of the http cookie and returning it cached
+		// evercookie_etag.php handles etagging
 		var img = new Image();
 		img.style.visibility = 'hidden';
 		img.style.position = 'absolute';
-		img.src = 'evercookie.php?name=' + name;
+		img.src = 'evercookie_etag.php?name=' + name;
 	}
 	else
 	{
-		var context = document.createElement('canvas');
-		context.style.visibility = 'hidden';
-		context.style.position = 'absolute';
-		context.width = 200;
-		context.height = 1;
-		var ctx = context.getContext('2d');
-		
 		// interestingly enough, we want to erase our evercookie
 		// http cookie so the php will force a cached response
-		var origvalue = this.getFromStr('evercookie', document.cookie);
-		document.cookie = 'evercookie=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/';
+		var origvalue = this.getFromStr('evercookie_etag', document.cookie);
+		self._ec.etagData = undefined;
+		document.cookie = 'evercookie_etag=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/';
 
-		var img = new Image();
-		img.style.visibility = 'hidden';
-		img.style.position = 'absolute';
-		img.src = 'evercookie.php?name=' + name;
-		
-		img.onload = function()
-		{
-			// put our cookie back
-			document.cookie = 'evercookie=' + origvalue + '; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/';
+		$.ajax({
+			url: 'evercookie_etag.php?name=' + name,
+			success: function(data) {
+				// put our cookie back
+				document.cookie = 'evercookie_etag=' + origvalue + '; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/';
 
-			self._ec.pngData = '';
-			ctx.drawImage(img,0,0);
-
-			// get CanvasPixelArray from  given coordinates and dimensions
-			var imgd = ctx.getImageData(0, 0, 200, 1);
-			var pix = imgd.data;
-
-			// loop over each pixel to get the "RGB" values (ignore alpha)
-			for (var i = 0, n = pix.length; i < n; i += 4)
-			{
-				if (pix[i  ] == 0) break;
-				self._ec.pngData += String.fromCharCode(pix[i]);
-				if (pix[i+1] == 0) break;
-				self._ec.pngData += String.fromCharCode(pix[i+1]);
-				if (pix[i+2] == 0) break;
-				self._ec.pngData += String.fromCharCode(pix[i+2]);
+				self._ec.etagData = data;
 			}
-		}	
+		});
 	}
+}
+
+this.evercookie_lso = function(name, value)
+{
+    var div = document.getElementById('swfcontainer');
+	if (!div)
+	{
+		div = document.createElement("div");
+		div.setAttribute('id', 'swfcontainer');
+		document.body.appendChild(div);
+	}
+
+	var flashvars = {};
+	if (typeof value != 'undefined')
+		flashvars.everdata = name + '=' + value;
+
+	var params           = {};
+	params.swliveconnect = "true";
+	var attributes       = {};
+	attributes.id        = "myswf";
+	attributes.name      = "myswf";
+	swfobject.embedSWF("evercookie.swf", "swfcontainer", "1", "1", "9.0.0", false, flashvars, params, attributes);
 }
 
 this.evercookie_png = function(name, value)
@@ -305,14 +301,14 @@ this.evercookie_png = function(name, value)
 		if (typeof(value) != "undefined")
 		{
 			// make sure we have evercookie session defined first
-			document.cookie = 'evercookie=' + name + '=' + value;
+			document.cookie = 'evercookie_png=' + value;
 			
-			// evercookie.php handles the hard part of generating the image
+			// evercookie_png.php handles the hard part of generating the image
 			// based off of the http cookie and returning it cached
 			var img = new Image();
 			img.style.visibility = 'hidden';
 			img.style.position = 'absolute';
-			img.src = 'evercookie.php';
+			img.src = 'evercookie_png.php?name=' + name;
 		}
 		else
 		{
@@ -326,17 +322,18 @@ this.evercookie_png = function(name, value)
 			// interestingly enough, we want to erase our evercookie
 			// http cookie so the php will force a cached response
 			var origvalue = this.getFromStr('evercookie', document.cookie);
-			document.cookie = 'evercookie=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/';
+			self._ec.pngData = undefined;
+			document.cookie = 'evercookie_png=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/';
 
 			var img = new Image();
 			img.style.visibility = 'hidden';
 			img.style.position = 'absolute';
-			img.src = 'evercookie.php';
+			img.src = 'evercookie_png.php?name=' + name;
 			
 			img.onload = function()
 			{
 				// put our cookie back
-				document.cookie = 'evercookie=' + origvalue + '; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/';
+				document.cookie = 'evercookie_png=' + origvalue + '; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/';
 
 				self._ec.pngData = '';
 				ctx.drawImage(img,0,0);
@@ -377,37 +374,40 @@ this.evercookie_local_storage = function(name, value)
 
 this.evercookie_database_storage = function(name, value)
 {
-	if (window.openDatabase)
-	{		
-		var database = window.openDatabase("sqlite_evercookie", "", "evercookie", 1024 * 1024);
+	try
+	{
+		if (window.openDatabase)
+		{		
+			var database = window.openDatabase("sqlite_evercookie", "", "evercookie", 1024 * 1024);
 
-		if (typeof(value) != "undefined")
-			database.transaction(function(tx)
-			{
-				tx.executeSql("CREATE TABLE IF NOT EXISTS cache(" +
-					"id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +
-					"name TEXT NOT NULL, " +
-					"value TEXT NOT NULL, " +
-					"UNIQUE (name)" + 
-				")", [], function (tx, rs) { }, function (tx, err) { });
+			if (typeof(value) != "undefined")
+				database.transaction(function(tx)
+				{
+					tx.executeSql("CREATE TABLE IF NOT EXISTS cache(" +
+						"id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +
+						"name TEXT NOT NULL, " +
+						"value TEXT NOT NULL, " +
+						"UNIQUE (name)" + 
+					")", [], function (tx, rs) { }, function (tx, err) { });
 
-				tx.executeSql("INSERT OR REPLACE INTO cache(name, value) VALUES(?, ?)", [name, value],
-					function (tx, rs) { }, function (tx, err) { })
-			});
-		else
-		{
-			database.transaction(function(tx)
+					tx.executeSql("INSERT OR REPLACE INTO cache(name, value) VALUES(?, ?)", [name, value],
+						function (tx, rs) { }, function (tx, err) { })
+				});
+			else
 			{
-				tx.executeSql("SELECT value FROM cache WHERE name=?", [name],
-				function(tx, result1) {
-					if (result1.rows.length >= 1)
-						self._ec.dbData = result1.rows.item(0)['value'];
-					else
-						self._ec.dbData = '';
-				}, function (tx, err) { })
-			});
+				database.transaction(function(tx)
+				{
+					tx.executeSql("SELECT value FROM cache WHERE name=?", [name],
+					function(tx, result1) {
+						if (result1.rows.length >= 1)
+							self._ec.dbData = result1.rows.item(0)['value'];
+						else
+							self._ec.dbData = '';
+					}, function (tx, err) { })
+				});
+			}
 		}
-	}
+	} catch(e) { }
 }
 
 this.evercookie_session_storage = function(name, value)
@@ -633,24 +633,30 @@ this.evercookie_history = function(name, value)
 	}
 }
 
-this.createIframe = function(url, name)
+this.createElem = function(type, name, append)
 {
-	var el = document.createElement("iframe");
+	var el;
+	if (typeof name != 'undefined' && document.getElementById(name))
+		el = document.getElementById(name);
+	else
+		el = document.createElement(type);
 	el.style.visibility = 'hidden';
 	el.style.position = 'absolute';
-	el.setAttribute('id', name);
-	document.body.appendChild(el);
-	el.setAttribute('src', url);
+
+	if (name)
+		el.setAttribute('id', name);
+
+	if (append)
+		document.body.appendChild(el);
+
 	return el;
 }
 
-this.addJavascript = function(jsname, pos)
+this.createIframe = function(url, name)
 {
-	var th = document.getElementsByTagName(pos)[0];
-	var s = document.createElement('script');
-	s.setAttribute('type', 'text/javascript');
-	s.setAttribute('src', jsname);
-	th.appendChild(s);
+	var el = this.createElem('iframe', name, 1);
+	el.setAttribute('src', url);
+	return el;
 }
 
 // wait for our swfobject to appear (swfobject.js to load)
@@ -662,50 +668,9 @@ this.waitForSwf = function(i)
 		i++;
 
 	// wait for ~2 seconds for swfobject to appear
-	if (i < 10 && typeof swfobject == 'undefined')
+	if (i < _ec_tests && typeof swfobject == 'undefined')
 		setTimeout(waitForSwf, 300, i);
 }
-
-this.createLso = function(name, value)
-{
-	if (typeof swfobject == 'undefined')
-		return;
-
-	// already have swf
-	if (document.getElementById('myswf') && typeof value == 'undefined')
-		return;
-
-	var div = this.createDiv('swfcontainer');
-	var flashvars = {};
-	if (typeof value != 'undefined')
-	{
-		flashvars.everdata = name + '=' + value;
-	}
-
-	var params           = {};
-	params.swliveconnect = "true";
-	var attributes       = {};
-	attributes.id        = "myswf";
-	attributes.name      = "myswf";
-	swfobject.embedSWF("evercookie.swf", "swfcontainer", "1", "1", "9.0.0", false, flashvars, params, attributes);
-}
-
-this.addLoadEvent = function(func)
-{ 
-	var oldonload = window.onload; 
-	if (typeof window.onload != 'function')
-		window.onload = func; 
-	else
-	{ 
-		window.onload = function()
-		{ 
-			if (oldonload)
-				oldonload(); 
-			func(); 
-		} 
-	} 
-}
-
 
 this.evercookie_cookie = function(name, value)
 {
@@ -811,10 +776,7 @@ this.hasVisited = function(url)
 }
 
 /* create our anchor tag */
-var _link = document.createElement("a");
-_link.id = "_ec_rgb_link";
-_link.style.visibility = 'hidden';
-_link.style.position = 'absolute';
+var _link = this.createElem('a', '_ec_rgb_link');
 
 /* for monitoring */
 var created_style;

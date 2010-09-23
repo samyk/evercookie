@@ -1,5 +1,5 @@
 <?php
-/* evercookie 0.2, by samy kamkar, 09/20/2010
+/* evercookie 0.3, by samy kamkar, 09/20/2010
  *  http://samy.pl : code@samy.pl
  *
  * This is the server-side variable PNG generator for evercookie.
@@ -19,7 +19,7 @@
  */
 
 // we don't have a cookie, user probably deleted it, force cache
-if (!$_COOKIE["evercookie"])
+if (!$_COOKIE["evercookie_png"])
 {
 	header("HTTP/1.1 304 Not Modified");
 	exit;
@@ -31,7 +31,7 @@ $y = 1;
 
 $gd = imagecreatetruecolor($x, $y);
 
-$data_arr = str_split($_COOKIE["evercookie"]);
+$data_arr = str_split($_COOKIE["evercookie_png"]);
 
 $x = 0;
 $y = 0;
