@@ -1,5 +1,5 @@
 <?php
-/* evercookie 0.3, by samy kamkar, 09/20/2010
+/* evercookie, by samy kamkar, 09/20/2010
  *  http://samy.pl : code@samy.pl
  *
  * This is the server-side ETag software which tags a user by 

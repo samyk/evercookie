@@ -16,7 +16,8 @@
 <a href="http://samy.pl">samy's home page</a> || <a href="http://twitter.com/samykamkar">follow my twitter</a> || <a href="http://namb.la">blog</a> || <a href="mailto:code@samy.pl">email me</a> || samy kamkar<hr>
 
 <h1>evercookie <small>-- never forget.</small></h1>
-09/23/2010: <font color=red>new version with ETag and userData support!</font></nobr>
+10/10/2010: Reported on by the <a target=_new href="http://www.nytimes.com/2010/10/11/business/media/11privacy.html?hp">New York Times</a>
+
 <PRE>
 
 </PRE>
@@ -37,10 +38,13 @@
     following storage mechanisms when available:<b>
      - Standard <A href="http://en.wikipedia.org/wiki/HTTP_cookie">HTTP Cookies</a>
      - <a href="http://en.wikipedia.org/wiki/Local_Shared_Object">Local Shared Objects</a> (Flash Cookies)
+     - Silverlight <a href="http://www.silverlight.net/learn/quickstarts/isolatedstorage/">Isolated Storage</a>
      - Storing cookies in RGB values of auto-generated, force-cached 
         PNGs using HTML5 Canvas tag to read pixels (cookies) back out
      - Storing cookies in and reading out <a href="http://samy.pl/csshack/">Web History</a>
      - Storing cookies in HTTP <a href="http://en.wikipedia.org/wiki/HTTP_ETag">ETags</a>
+     - Storing cookies in <a href="http://en.wikipedia.org/wiki/Web_cache">Web cache</a>
+     - <a href="http://en.wikipedia.org/wiki/HTTP_cookie#window.name">window.name</a> caching
      - Internet Explorer <a href="http://msdn.microsoft.com/en-us/library/ms531424(VS.85).aspx">userData</a> storage
      - HTML5 <a href="http://dev.w3.org/html5/webstorage/#the-sessionstorage-attribute">Session Storage</a>
      - HTML5 <a href="http://dev.w3.org/html5/webstorage/#dom-localstorage">Local Storage</a>
@@ -48,8 +52,7 @@
      - HTML5 <a href="http://dev.w3.org/html5/webdatabase/">Database Storage</a> via SQLite
 
     TODO:</b> adding support for:
-     - Silverlight <a href="http://www.silverlight.net/learn/quickstarts/isolatedstorage/">Isolated Storage</a>
-     - <a href="http://en.wikipedia.org/wiki/HTTP_cookie#window.name">window.name</a> caching
+     - Caching in <a href="http://en.wikipedia.org/wiki/Basic_access_authentication">HTTP Authentication</a>
      - Using Java to produce a unique key based off of NIC info
 
     Got a crazy idea to improve this? <a href="mailto:code@samy.pl">Email me!</a>
@@ -60,7 +63,7 @@
 var val = "<?php echo rand(1, 1000) ?>";
 var ec = new evercookie();
 
-getC(1);
+getC(0);
 //setTimeout(getC, 500, 1);
 
 function getC(dont)
@@ -68,8 +71,11 @@ function getC(dont)
 	ec.get("uid", function(best, all) {
 		document.getElementById('idtag').innerHTML = best;
 		var txt = document.getElementById('cookies');
+		txt.innerHTML = '';
 		for (var item in all)
 			txt.innerHTML += item + ' mechanism: ' + (val == all[item] ? '<b>' + all[item] + '</b>' : all[item]) + '<br>';
+		if (!dont)
+			getC(1);
 	}, dont);
 }
 </script>
@@ -87,13 +93,13 @@ function getC(dont)
     <input type=button value="Click to rediscover cookies WITHOUT reactivating deleted cookies" onClick="document.getElementById('idtag').innerHTML = '*checking*'; document.getElementById('cookies').innerHTML = ''; setTimeout(getC, 300, 1);">
 
 </PRE>
-<H2><a href="evercookie-0.3.tgz">DOWNLOAD</a></H2><PRE>
+<H2><a href="evercookie-0.4.tgz">DOWNLOAD</a></H2><PRE>
     <I>evercookie</I> is written in JavaScript and additionally
     uses a SWF (Flash) object for the Local Shared Objects and
     PHPs for the server-side generation of cached PNGs and ETags.
 
-    <B>v0.3 BETA</B>, released 09/23/2010
-            download source <a href="evercookie-0.3.tgz">here</a>
+    <B>v0.4 BETA</B>, released 10/13/2010
+            download source <a href="evercookie-0.4.tgz">here</a>
 
     Or get it from github: <a href="http://github.com/samyk/evercookie">http://github.com/samyk/evercookie</a>
 
@@ -113,13 +119,21 @@ function getC(dont)
 
 	<b>What if the user deletes their cookies?</b>
 	That's the great thing about evercookie. With all the methods available,
-	currently ten, it only takes one cookie to remain for most, if not all,
+	currently thirteen, it only takes one cookie to remain for most, if not all,
 	of them to be reset again.
 
 	For example, if the user deletes their standard HTTP cookies, LSO data,
 	and all HTML5 storage, the PNG cookie and history cookies will still
 	exist. Once either of those are discovered, all of the others will
 	come back (assuming the browser supports them).
+
+	<b>Why not use EFF's <a href="https://panopticlick.eff.org/">Panopticlick</a>?</b>
+	Panopticlick is an awesome idea, however the uniqueness really only
+	helps in consumer machines and typically not systems running in a
+	business or corporation. Typically those systems are virtually
+	identical and provide no difference in information where a home
+	user's laptop would. Evercookie is meant to be able to store the
+	same unique data a normal cookie would.
 
 	<b>Does this work cross-browser?</b>
 	If a user gets cookied on one browser and switches to another browser,
@@ -135,8 +149,8 @@ function getC(dont)
 	The server must at least have access to the JavaScript evercookie file.
 	Additionally, to use Local Shared Object (Flash Cookies) storage, the
 	evercookie.swf file must be present, and to use the auto-generated PNG
-	caching and ETag storage mechanisms, PHP must be on the server and
-	evercookie_png.php and evercookie_etag.php must be installed.
+	caching, standard caching and ETag storage mechanisms, PHP must be
+	installed and evercookie_(png|etag|cache).php must be on the server.
 
 	All of these are available in the download.
 

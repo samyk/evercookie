@@ -1,0 +1,12 @@
+C:\Users\Ethrel\Documents\Projects\Silverlight\evercookie\evercookie\Bin\Debug\evercookie.dll
+C:\Users\Ethrel\Documents\Projects\Silverlight\evercookie\evercookie\Bin\Debug\evercookie.pdb
+C:\Users\Ethrel\Documents\Projects\Silverlight\evercookie\evercookie\Bin\Debug\AppManifest.xaml
+C:\Users\Ethrel\Documents\Projects\Silverlight\evercookie\evercookie\Bin\Debug\evercookie.xap
+C:\Users\Ethrel\Documents\Projects\Silverlight\evercookie\evercookie\Bin\Debug\evercookieTestPage.html
+C:\Users\Ethrel\Documents\Projects\Silverlight\evercookie\evercookie\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Ethrel\Documents\Projects\Silverlight\evercookie\evercookie\obj\Debug\App.g.i.cs
+C:\Users\Ethrel\Documents\Projects\Silverlight\evercookie\evercookie\obj\Debug\MainPage.g.i.cs
+C:\Users\Ethrel\Documents\Projects\Silverlight\evercookie\evercookie\obj\Debug\evercookie.g.resources
+C:\Users\Ethrel\Documents\Projects\Silverlight\evercookie\evercookie\obj\Debug\evercookie.dll
+C:\Users\Ethrel\Documents\Projects\Silverlight\evercookie\evercookie\obj\Debug\evercookie.pdb
+C:\Users\Ethrel\Documents\Projects\Silverlight\evercookie\evercookie\obj\Debug\XapCacheFile.xml

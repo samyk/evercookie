@@ -1,5 +1,5 @@
 /*
- * evercookie 0.3 (09/20/2010) -- extremely persistent cookies
+ * evercookie 0.4 (10/13/2010) -- extremely persistent cookies
  *
  *  by samy kamkar : code@samy.pl : http://samy.pl
  *
@@ -9,8 +9,11 @@
  * specifically it uses:
  *  - standard http cookies
  *  - flash cookies (local shared objects)
+ *  - silverlight isolated storage
  *  - png generation w/forced cache and html5 canvas pixel reading
  *  - http etags
+ *  - http cache
+ *  - window.name
  *  - IE userData
  *  - html5 session cookies
  *  - html5 local storage
@@ -24,9 +27,6 @@
  *
  *  !!! SOME OF THESE ARE CROSS-DOMAIN COOKIES, THIS MEANS
  *  OTHER SITES WILL BE ABLE TO READ SOME OF THESE COOKIES !!!
- *
- * TODO:
- *	isolated storage (silverlight)
  *
  * USAGE:
 
@@ -63,7 +63,7 @@
 
 /* to turn off CSS history knocking, set _ec_history to 0 */
 var _ec_history = 1; // CSS history knocking or not .. can be network intensive
-var _ec_tests = 10;
+var _ec_tests = 10;//1000;
 var _ec_debug = 0;
 
 function _ec_dump(arr, level)
@@ -90,6 +90,29 @@ function _ec_dump(arr, level)
 		dumped_text = "===>"+arr+"<===("+typeof(arr)+")";
 	}
 	return dumped_text;
+}
+
+function _ec_replace(str, key, value)
+{
+	if (str.indexOf('&' + key + '=') > -1 || str.indexOf(key + '=') == 0)
+	{
+		// find start
+		var idx = str.indexOf('&' + key + '=');
+		if (idx == -1)
+			idx = str.indexOf(key + '=');
+
+		// find end
+		var end = str.indexOf('&', idx + 1);
+		var newstr;
+		if (end != -1)
+			newstr = str.substr(0, idx) + str.substr(end + (idx ? 0 : 1)) + '&' + key + '=' + value;
+		else
+			newstr = str.substr(0, idx) + '&' + key + '=' + value;
+
+		return newstr;
+	}
+	else
+		return str + '&' + key + '=' + value;
 }
 
 
@@ -143,26 +166,35 @@ this._evercookie = function(name, cb, value, i, dont_reset)
 		self.evercookie_database_storage(name, value);
 		self.evercookie_png(name, value);
 		self.evercookie_etag(name, value);
+		self.evercookie_cache(name, value);
 		self.evercookie_lso(name, value);
+		self.evercookie_silverlight(name, value);
 
-		self._ec.userData = self.evercookie_userdata(name, value);
-		self._ec.cookieData = self.evercookie_cookie(name, value);
-		self._ec.localData = self.evercookie_local_storage(name, value);
-		self._ec.globalData = self.evercookie_global_storage(name, value);
-		self._ec.sessionData = self.evercookie_session_storage(name, value);
+		self._ec.userData		= self.evercookie_userdata(name, value);
+		self._ec.cookieData		= self.evercookie_cookie(name, value);
+		self._ec.localData		= self.evercookie_local_storage(name, value);
+		self._ec.globalData		= self.evercookie_global_storage(name, value);
+		self._ec.sessionData	= self.evercookie_session_storage(name, value);
+		self._ec.windowData		= self.evercookie_window(name, value);
 	
 		if (_ec_history)
 			self._ec.historyData = self.evercookie_history(name, value);
 	}
 
-	// when writing data, we need to make sure lso object is there
+	// when writing data, we need to make sure lso and silverlight object is there
 	if (typeof value != 'undefined')
 	{
-		if (typeof _global_lso == 'undefined' && i++ < _ec_tests)
-			setTimeout(self._evercookie, 300, name, cb, value, i);
+		if (
+            (
+                (typeof _global_lso == 'undefined') ||
+                (typeof _global_isolated == 'undefined')
+            )
+            && i++ < _ec_tests
+        )
+			setTimeout(function() { self._evercookie(name, cb, value, i, dont_reset) }, 300);
 	}
 	
-	// when reading data, we need to wait for swf, db and png
+	// when reading data, we need to wait for swf, db, silverlight and png
 	else
 	{
 		if (
@@ -171,13 +203,15 @@ this._evercookie = function(name, cb, value, i, dont_reset)
 				(window.openDatabase && typeof self._ec.dbData == 'undefined') ||
 				(typeof _global_lso == 'undefined') ||
 				(typeof self._ec.etagData == 'undefined') ||
-				(document.createElement('canvas').getContext && (typeof self._ec.pngData == 'undefined' || self._ec.pngData == ''))
+				(typeof self._ec.cacheData == 'undefined') ||
+				(document.createElement('canvas').getContext && (typeof self._ec.pngData == 'undefined' || self._ec.pngData == '')) ||
+                (typeof _global_isolated == 'undefined')
 			)
 			&&
 			i++ < _ec_tests
 		)
 		{
-			setTimeout(self._evercookie, 300, name, cb, value, i);
+			setTimeout(function() { self._evercookie(name, cb, value, i, dont_reset) }, 300);
 		}
 
 		// we hit our max wait time or got all our data
@@ -186,6 +220,10 @@ this._evercookie = function(name, cb, value, i, dont_reset)
 			// get just the piece of data we need from swf
 			self._ec.lsoData = self.getFromStr(name, _global_lso);
 			_global_lso = undefined;
+            
+			// get just the piece of data we need from silverlight
+			self._ec.slData = self.getFromStr(name, _global_isolated);
+			_global_isolated = undefined;
 
 			var tmpec = self._ec;
 			self._ec = {};
@@ -196,9 +234,11 @@ this._evercookie = function(name, cb, value, i, dont_reset)
 			var candidate;
 			for (var item in tmpec)
 			{
-				if (typeof tmpec[item] != 'undefined' && typeof tmpec[item] != 'null' &&
-				  tmpec[item] != 'null' && tmpec[item] != 'undefined')
-					candidates[tmpec[item]] = typeof candidates[tmpec[item]] == 'undefined' ? 1 : candidates[tmpec[item]] + 1;
+				if (typeof tmpec[item] != 'undefined' && typeof tmpec[item] != 'null' && tmpec[item] != '' &&
+				  tmpec[item] != 'null' && tmpec[item] != 'undefined' && tmpec[item] != null)
+				{
+						candidates[tmpec[item]] = typeof candidates[tmpec[item]] == 'undefined' ? 1 : candidates[tmpec[item]] + 1;
+				}
 			}
 			
 			for (var item in candidates)
@@ -220,6 +260,16 @@ this._evercookie = function(name, cb, value, i, dont_reset)
 	}
 }
 
+this.evercookie_window = function(name, value)
+{
+	try {
+		if (typeof(value) != "undefined")
+			window.name = _ec_replace(window.name, name, value);
+		else
+			return this.getFromStr(name, window.name);
+	} catch(e) { }
+}
+
 this.evercookie_userdata = function(name, value)
 {
 	try {
@@ -237,6 +287,39 @@ this.evercookie_userdata = function(name, value)
 			return elm.getAttribute(name);
 		}
 	} catch(e) { }
+}
+
+this.evercookie_cache = function(name, value)
+{
+	if (typeof(value) != "undefined")
+	{
+		// make sure we have evercookie session defined first
+		document.cookie = 'evercookie_cache=' + value;
+		
+		// evercookie_cache.php handles caching
+		var img = new Image();
+		img.style.visibility = 'hidden';
+		img.style.position = 'absolute';
+		img.src = 'evercookie_cache.php?name=' + name;
+	}
+	else
+	{
+		// interestingly enough, we want to erase our evercookie
+		// http cookie so the php will force a cached response
+		var origvalue = this.getFromStr('evercookie_cache', document.cookie);
+		self._ec.cacheData = undefined;
+		document.cookie = 'evercookie_cache=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/';
+
+		$.ajax({
+			url: 'evercookie_cache.php?name=' + name,
+			success: function(data) {
+				// put our cookie back
+				document.cookie = 'evercookie_cache=' + origvalue + '; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/';
+
+				self._ec.cacheData = data;
+			}
+		});
+	}
 }
 
 this.evercookie_etag = function(name, value)
@@ -312,6 +395,7 @@ this.evercookie_png = function(name, value)
 		}
 		else
 		{
+			self._ec.pngData = undefined;
 			var context = document.createElement('canvas');
 			context.style.visibility = 'hidden';
 			context.style.position = 'absolute';
@@ -321,8 +405,7 @@ this.evercookie_png = function(name, value)
 			
 			// interestingly enough, we want to erase our evercookie
 			// http cookie so the php will force a cached response
-			var origvalue = this.getFromStr('evercookie', document.cookie);
-			self._ec.pngData = undefined;
+			var origvalue = this.getFromStr('evercookie_png', document.cookie);
 			document.cookie = 'evercookie_png=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/';
 
 			var img = new Image();
@@ -438,6 +521,36 @@ this.evercookie_global_storage = function(name, value)
 				return eval("globalStorage[host]." + name);
 		} catch(e) { }
 	}
+}
+this.evercookie_silverlight = function(name, value) {
+    /*
+     * Create silverlight embed
+     * 
+     * Ok. so, I tried doing this the proper dom way, but IE chokes on appending anything in object tags (including params), so this
+     * is the best method I found. Someone really needs to find a less hack-ish way. I hate the look of this shit.
+    */
+        var source = "evercookie.xap";
+        var minver = "4.0.50401.0";
+        
+        var initParam = "";
+        if(typeof(value) != "undefined")
+            initParam = '<param name="initParams" value="'+name+'='+value+'" />';
+        
+        var html =
+        '<object data="data:application/x-silverlight-2," type="application/x-silverlight-2" id="mysilverlight" width="0" height="0">' +
+            initParam +
+            '<param name="source" value="'+source+'"/>' +
+            '<param name="onLoad" value="onSilverlightLoad"/>' +
+            '<param name="onError" value="onSilverlightError"/>' +
+            '<param name="background" value="Transparent"/>' +
+            '<param name="windowless" value="true"/>' +
+            '<param name="minRuntimeVersion" value="'+minver+'"/>' +
+            '<param name="autoUpgrade" value="true"/>' +
+            '<a href="http://go.microsoft.com/fwlink/?LinkID=149156&v='+minver+'" style="text-decoration:none">' +
+              '<img src="http://go.microsoft.com/fwlink/?LinkId=108181" alt="Get Microsoft Silverlight" style="border-style:none"/>' +
+            '</a>' +
+        '</object>';
+        document.body.innerHTML+=html;
 }
 
 // public method for encoding
@@ -669,7 +782,7 @@ this.waitForSwf = function(i)
 
 	// wait for ~2 seconds for swfobject to appear
 	if (i < _ec_tests && typeof swfobject == 'undefined')
-		setTimeout(waitForSwf, 300, i);
+		setTimeout(function() { waitForSwf(i) }, 300);
 }
 
 this.evercookie_cookie = function(name, value)
@@ -845,3 +958,20 @@ this._testURL = function(url, no_color)
 return _class;
 })();
 
+
+/*
+ * Again, ugly workaround....same problem as flash.
+*/
+var _global_isolated;
+function onSilverlightLoad(sender, args) {
+    var control = sender.getHost();
+    _global_isolated = control.Content.App.getIsolatedStorage();
+}
+/*
+function onSilverlightError(sender, args) {
+    _global_isolated = "";
+    
+}*/
+function onSilverlightError(sender, args) {
+    _global_isolated = "";
+}

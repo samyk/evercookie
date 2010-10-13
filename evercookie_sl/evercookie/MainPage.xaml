@@ -1,0 +1,11 @@
+﻿<UserControl x:Class="evercookie.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="200" d:DesignWidth="200">
+    <Canvas>
+        <TextBox x:Name="txtOut" Grid.Row="6" Grid.Column="1" TextWrapping="Wrap" Width="200" Height="200" ToolTipService.ToolTip="Enter Name" HorizontalAlignment="Left" VerticalAlignment="Top" TabIndex="1" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" Text="Loading..."></TextBox>
+    </Canvas>
+</UserControl>
