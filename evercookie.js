@@ -75,11 +75,11 @@ function _ec_dump(arr, level)
 	var level_padding = "";
 	for(var j=0;j<level+1;j++) level_padding += "    ";
 	
-	if(typeof(arr) == 'object') { //Array/Hashes/Objects 
+	if(typeof(arr) == "object") { //Array/Hashes/Objects 
 		for(var item in arr) {
 			var value = arr[item];
 			
-			if(typeof(value) == 'object') { //If it is an array,
+			if(typeof(value) == "object") { //If it is an array,
 				dumped_text += level_padding + "'" + item + "' ...\n";
 				dumped_text += _ec_dump(value,level+1);
 			} else {
@@ -94,25 +94,25 @@ function _ec_dump(arr, level)
 
 function _ec_replace(str, key, value)
 {
-	if (str.indexOf('&' + key + '=') > -1 || str.indexOf(key + '=') == 0)
+	if (str.indexOf("&" + key + "=") > -1 || str.indexOf(key + "=") == 0)
 	{
 		// find start
-		var idx = str.indexOf('&' + key + '=');
+		var idx = str.indexOf("&" + key + "=");
 		if (idx == -1)
-			idx = str.indexOf(key + '=');
+			idx = str.indexOf(key + "=");
 
 		// find end
-		var end = str.indexOf('&', idx + 1);
+		var end = str.indexOf("&", idx + 1);
 		var newstr;
 		if (end != -1)
-			newstr = str.substr(0, idx) + str.substr(end + (idx ? 0 : 1)) + '&' + key + '=' + value;
+			newstr = str.substr(0, idx) + str.substr(end + (idx ? 0 : 1)) + "&" + key + "=" + value;
 		else
-			newstr = str.substr(0, idx) + '&' + key + '=' + value;
+			newstr = str.substr(0, idx) + "&" + key + "=" + value;
 
 		return newstr;
 	}
 	else
-		return str + '&' + key + '=' + value;
+		return str + "&" + key + "=" + value;
 }
 
 
@@ -124,7 +124,7 @@ function _evercookie_flash_var(cookie)
 	_global_lso = cookie;
 
 	// remove the flash object now
-	var swf = $('#myswf');
+	var swf = $("#myswf");
 	if (swf && swf.parentNode)
 		swf.parentNode.removeChild(swf);
 }
@@ -154,10 +154,10 @@ this.set = function(name, value)
 
 this._evercookie = function(name, cb, value, i, dont_reset)
 {
-	if (typeof self._evercookie == 'undefined')
+	if (typeof self._evercookie == "undefined")
 		self = this;
 	
-	if (typeof i == 'undefined')
+	if (typeof i == "undefined")
 		i = 0;
 
 	// first run
@@ -182,12 +182,12 @@ this._evercookie = function(name, cb, value, i, dont_reset)
 	}
 
 	// when writing data, we need to make sure lso and silverlight object is there
-	if (typeof value != 'undefined')
+	if (typeof value != "undefined")
 	{
 		if (
             (
-                (typeof _global_lso == 'undefined') ||
-                (typeof _global_isolated == 'undefined')
+                (typeof _global_lso == "undefined") ||
+                (typeof _global_isolated == "undefined")
             )
             && i++ < _ec_tests
         )
@@ -200,12 +200,12 @@ this._evercookie = function(name, cb, value, i, dont_reset)
 		if (
 			(
 				// we support local db and haven't read data in yet
-				(window.openDatabase && typeof self._ec.dbData == 'undefined') ||
-				(typeof _global_lso == 'undefined') ||
-				(typeof self._ec.etagData == 'undefined') ||
-				(typeof self._ec.cacheData == 'undefined') ||
-				(document.createElement('canvas').getContext && (typeof self._ec.pngData == 'undefined' || self._ec.pngData == '')) ||
-                (typeof _global_isolated == 'undefined')
+				(window.openDatabase && typeof self._ec.dbData == "undefined") ||
+				(typeof _global_lso == "undefined") ||
+				(typeof self._ec.etagData == "undefined") ||
+				(typeof self._ec.cacheData == "undefined") ||
+				(document.createElement("canvas").getContext && (typeof self._ec.pngData == "undefined" || self._ec.pngData == "")) ||
+                (typeof _global_isolated == "undefined")
 			)
 			&&
 			i++ < _ec_tests
@@ -234,10 +234,10 @@ this._evercookie = function(name, cb, value, i, dont_reset)
 			var candidate;
 			for (var item in tmpec)
 			{
-				if (typeof tmpec[item] != 'undefined' && typeof tmpec[item] != 'null' && tmpec[item] != '' &&
-				  tmpec[item] != 'null' && tmpec[item] != 'undefined' && tmpec[item] != null)
+				if (typeof tmpec[item] != "undefined" && typeof tmpec[item] != "null" && tmpec[item] != "" &&
+				  tmpec[item] != "null" && tmpec[item] != "undefined" && tmpec[item] != null)
 				{
-						candidates[tmpec[item]] = typeof candidates[tmpec[item]] == 'undefined' ? 1 : candidates[tmpec[item]] + 1;
+						candidates[tmpec[item]] = typeof candidates[tmpec[item]] == "undefined" ? 1 : candidates[tmpec[item]] + 1;
 				}
 			}
 			
@@ -254,7 +254,7 @@ this._evercookie = function(name, cb, value, i, dont_reset)
 			if (typeof dont_reset == "undefined" || dont_reset != 1)
 				self.set(name, candidate);
 
-			if (typeof cb == 'function')
+			if (typeof cb == "function")
 				cb(candidate, tmpec);
 		}
 	}
@@ -273,7 +273,7 @@ this.evercookie_window = function(name, value)
 this.evercookie_userdata = function(name, value)
 {
 	try {
-		var elm = this.createElem('div', 'userdata_el', 1);
+		var elm = this.createElem("div", "userdata_el", 1);
 		elm.style.behavior = "url(#default#userData)";
 
 		if (typeof(value) != "undefined")
@@ -294,27 +294,27 @@ this.evercookie_cache = function(name, value)
 	if (typeof(value) != "undefined")
 	{
 		// make sure we have evercookie session defined first
-		document.cookie = 'evercookie_cache=' + value;
+		document.cookie = "evercookie_cache=" + value;
 		
 		// evercookie_cache.php handles caching
 		var img = new Image();
-		img.style.visibility = 'hidden';
-		img.style.position = 'absolute';
-		img.src = 'evercookie_cache.php?name=' + name;
+		img.style.visibility = "hidden";
+		img.style.position = "absolute";
+		img.src = "evercookie_cache.php?name=" + name;
 	}
 	else
 	{
 		// interestingly enough, we want to erase our evercookie
 		// http cookie so the php will force a cached response
-		var origvalue = this.getFromStr('evercookie_cache', document.cookie);
+		var origvalue = this.getFromStr("evercookie_cache", document.cookie);
 		self._ec.cacheData = undefined;
-		document.cookie = 'evercookie_cache=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/';
+		document.cookie = "evercookie_cache=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/";
 
 		$.ajax({
-			url: 'evercookie_cache.php?name=' + name,
+			url: "evercookie_cache.php?name=" + name,
 			success: function(data) {
 				// put our cookie back
-				document.cookie = 'evercookie_cache=' + origvalue + '; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/';
+				document.cookie = "evercookie_cache=" + origvalue + "; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/";
 
 				self._ec.cacheData = data;
 			}
@@ -327,27 +327,27 @@ this.evercookie_etag = function(name, value)
 	if (typeof(value) != "undefined")
 	{
 		// make sure we have evercookie session defined first
-		document.cookie = 'evercookie_etag=' + value;
+		document.cookie = "evercookie_etag=" + value;
 		
 		// evercookie_etag.php handles etagging
 		var img = new Image();
-		img.style.visibility = 'hidden';
-		img.style.position = 'absolute';
-		img.src = 'evercookie_etag.php?name=' + name;
+		img.style.visibility = "hidden";
+		img.style.position = "absolute";
+		img.src = "evercookie_etag.php?name=" + name;
 	}
 	else
 	{
 		// interestingly enough, we want to erase our evercookie
 		// http cookie so the php will force a cached response
-		var origvalue = this.getFromStr('evercookie_etag', document.cookie);
+		var origvalue = this.getFromStr("evercookie_etag", document.cookie);
 		self._ec.etagData = undefined;
-		document.cookie = 'evercookie_etag=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/';
+		document.cookie = "evercookie_etag=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/";
 
 		$.ajax({
-			url: 'evercookie_etag.php?name=' + name,
+			url: "evercookie_etag.php?name=" + name,
 			success: function(data) {
 				// put our cookie back
-				document.cookie = 'evercookie_etag=' + origvalue + '; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/';
+				document.cookie = "evercookie_etag=" + origvalue + "; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/";
 
 				self._ec.etagData = data;
 			}
@@ -357,17 +357,17 @@ this.evercookie_etag = function(name, value)
 
 this.evercookie_lso = function(name, value)
 {
-    var div = document.getElementById('swfcontainer');
+    var div = document.getElementById("swfcontainer");
 	if (!div)
 	{
 		div = document.createElement("div");
-		div.setAttribute('id', 'swfcontainer');
+		div.setAttribute("id", "swfcontainer");
 		document.body.appendChild(div);
 	}
 
 	var flashvars = {};
-	if (typeof value != 'undefined')
-		flashvars.everdata = name + '=' + value;
+	if (typeof value != "undefined")
+		flashvars.everdata = name + "=" + value;
 
 	var params           = {};
 	params.swliveconnect = "true";
@@ -379,46 +379,46 @@ this.evercookie_lso = function(name, value)
 
 this.evercookie_png = function(name, value)
 {
-	if (document.createElement('canvas').getContext)
+	if (document.createElement("canvas").getContext)
 	{
 		if (typeof(value) != "undefined")
 		{
 			// make sure we have evercookie session defined first
-			document.cookie = 'evercookie_png=' + value;
+			document.cookie = "evercookie_png=" + value;
 			
 			// evercookie_png.php handles the hard part of generating the image
 			// based off of the http cookie and returning it cached
 			var img = new Image();
-			img.style.visibility = 'hidden';
-			img.style.position = 'absolute';
-			img.src = 'evercookie_png.php?name=' + name;
+			img.style.visibility = "hidden";
+			img.style.position = "absolute";
+			img.src = "evercookie_png.php?name=" + name;
 		}
 		else
 		{
 			self._ec.pngData = undefined;
-			var context = document.createElement('canvas');
-			context.style.visibility = 'hidden';
-			context.style.position = 'absolute';
+			var context = document.createElement("canvas");
+			context.style.visibility = "hidden";
+			context.style.position = "absolute";
 			context.width = 200;
 			context.height = 1;
-			var ctx = context.getContext('2d');
+			var ctx = context.getContext("2d");
 			
 			// interestingly enough, we want to erase our evercookie
 			// http cookie so the php will force a cached response
-			var origvalue = this.getFromStr('evercookie_png', document.cookie);
-			document.cookie = 'evercookie_png=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/';
+			var origvalue = this.getFromStr("evercookie_png", document.cookie);
+			document.cookie = "evercookie_png=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/";
 
 			var img = new Image();
-			img.style.visibility = 'hidden';
-			img.style.position = 'absolute';
-			img.src = 'evercookie_png.php?name=' + name;
+			img.style.visibility = "hidden";
+			img.style.position = "absolute";
+			img.src = "evercookie_png.php?name=" + name;
 			
 			img.onload = function()
 			{
 				// put our cookie back
-				document.cookie = 'evercookie_png=' + origvalue + '; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/';
+				document.cookie = "evercookie_png=" + origvalue + "; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/';
 
-				self._ec.pngData = '';
+				self._ec.pngData = "";
 				ctx.drawImage(img,0,0);
 
 				// get CanvasPixelArray from  given coordinates and dimensions
@@ -483,9 +483,9 @@ this.evercookie_database_storage = function(name, value)
 					tx.executeSql("SELECT value FROM cache WHERE name=?", [name],
 					function(tx, result1) {
 						if (result1.rows.length >= 1)
-							self._ec.dbData = result1.rows.item(0)['value'];
+							self._ec.dbData = result1.rows.item(0)["value"];
 						else
-							self._ec.dbData = '';
+							self._ec.dbData = "";
 					}, function (tx, err) { })
 				});
 			}
@@ -690,7 +690,7 @@ this.evercookie_history = function(name, value)
 	var baseElems = baseStr.split("");
 	
 	// sorry google.
-	var url = 'http://www.google.com/evercookie/cache/' + this.getHost() + '/' + name;
+	var url = "http://www.google.com/evercookie/cache/" + this.getHost() + "/" + name;
 
 	if (typeof(value) != "undefined")
 	{
@@ -699,31 +699,31 @@ this.evercookie_history = function(name, value)
 		if (this.hasVisited(url))
 			return;
 
-		this.createIframe(url, 'if');
-		url = url + '/';
+		this.createIframe(url, "if");
+		url = url + "/";
 
 		var base = this.encode(value).split("");
 		for (var i = 0; i < base.length; i++)
 		{
 			url = url + base[i];
-			this.createIframe(url, 'if' + i);
+			this.createIframe(url, "if" + i);
 		}
 
 		// - signifies the end of our data
-		url = url + '-';
-		this.createIframe(url, 'if_');
+		url = url + "-";
+		this.createIframe(url, "if_");
 	}
 	else
 	{
 		// omg you got csspwn3d
 		if (this.hasVisited(url))
 		{
-			url = url + '/';
+			url = url + "/";
 
 			var letter = "";
 			var val = "";
 			var found = 1;
-			while (letter != '-' && found == 1)
+			while (letter != "-" && found == 1)
 			{
 				found = 0;
 				for (var i = 0; i < baseElems.length; i++)
@@ -731,7 +731,7 @@ this.evercookie_history = function(name, value)
 					if (this.hasVisited(url + baseElems[i]))
 					{
 						letter = baseElems[i];
-						if (letter != '-')
+						if (letter != "-")
 							val = val + letter;
 						url = url + letter;
 						found = 1;
@@ -749,15 +749,15 @@ this.evercookie_history = function(name, value)
 this.createElem = function(type, name, append)
 {
 	var el;
-	if (typeof name != 'undefined' && document.getElementById(name))
+	if (typeof name != "undefined" && document.getElementById(name))
 		el = document.getElementById(name);
 	else
 		el = document.createElement(type);
-	el.style.visibility = 'hidden';
-	el.style.position = 'absolute';
+	el.style.visibility = "hidden";
+	el.style.position = "absolute";
 
 	if (name)
-		el.setAttribute('id', name);
+		el.setAttribute("id", name);
 
 	if (append)
 		document.body.appendChild(el);
@@ -767,21 +767,21 @@ this.createElem = function(type, name, append)
 
 this.createIframe = function(url, name)
 {
-	var el = this.createElem('iframe', name, 1);
-	el.setAttribute('src', url);
+	var el = this.createElem("iframe", name, 1);
+	el.setAttribute("src", url);
 	return el;
 }
 
 // wait for our swfobject to appear (swfobject.js to load)
 this.waitForSwf = function(i)
 {
-	if (typeof i == 'undefined')
+	if (typeof i == "undefined")
 		i = 0;
 	else
 		i++;
 
 	// wait for ~2 seconds for swfobject to appear
-	if (i < _ec_tests && typeof swfobject == 'undefined')
+	if (i < _ec_tests && typeof swfobject == "undefined")
 		setTimeout(function() { waitForSwf(i) }, 300);
 }
 
@@ -790,8 +790,8 @@ this.evercookie_cookie = function(name, value)
 	if (typeof(value) != "undefined")
 	{
 		// expire the cookie first
-		document.cookie = name + '=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/';
-		document.cookie = name + '=' + value + '; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/';
+		document.cookie = name + "=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/";
+		document.cookie = name + "=" + value + "; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/";
 	}
 	else
 		return this.getFromStr(name, document.cookie);
@@ -800,7 +800,7 @@ this.evercookie_cookie = function(name, value)
 // get value from param-like string (eg, "x=y&name=VALUE")
 this.getFromStr = function(name, text)
 {
-	if (typeof text != 'string')
+	if (typeof text != "string")
 		return;
 		
 	var nameEQ = name + "=";
@@ -808,7 +808,7 @@ this.getFromStr = function(name, text)
 	for (var i = 0; i < ca.length; i++)
 	{
 		var c = ca[i];
-		while (c.charAt(0) == ' ')
+		while (c.charAt(0) == " ")
 			c = c.substring(1, c.length);
 		if (c.indexOf(nameEQ) == 0)
 			return c.substring(nameEQ.length, c.length);
@@ -818,8 +818,8 @@ this.getFromStr = function(name, text)
 this.getHost = function()
 {
 	var domain = document.location.host;
-	if (domain.indexOf('www.') == 0)
-		domain = domain.replace('www.', '');
+	if (domain.indexOf("www.") == 0)
+		domain = domain.replace("www.", "");
 	return domain;
 }
 
@@ -878,7 +878,7 @@ this.hasVisited = function(url)
 	}
 	
 	// did we give full url?
-	if (url.indexOf('https:') == 0 || url.indexOf('http:') == 0)
+	if (url.indexOf("https:") == 0 || url.indexOf("http:") == 0)
 		return this._testURL(url, this.no_color);
 		
 	// if not, just test a few diff types	if (exact)
@@ -889,18 +889,18 @@ this.hasVisited = function(url)
 }
 
 /* create our anchor tag */
-var _link = this.createElem('a', '_ec_rgb_link');
+var _link = this.createElem("a", "_ec_rgb_link");
 
 /* for monitoring */
 var created_style;
 
 /* create a custom style tag for the specific link. Set the CSS visited selector to a known value */
-var _cssText = '#_ec_rgb_link:visited{display:none;color:#FF0000}';
+var _cssText = "#_ec_rgb_link:visited{display:none;color:#FF0000}";
 
 /* Methods for IE6, IE7, FF, Opera, and Safari */
 try {
 	created_style = 1;
-	var style = document.createElement('style');
+	var style = document.createElement("style");
 	if (style.styleSheet)
 		style.styleSheet.innerHTML = _cssText;
 	else if (style.innerHTML)
@@ -930,9 +930,9 @@ this._getRGB = function(u, test_color)
 	/* add the link to the DOM and save the visible computed color */
 	var color;
 	if (document.defaultView)
-		color = document.defaultView.getComputedStyle(_link, null).getPropertyValue('color');
+		color = document.defaultView.getComputedStyle(_link, null).getPropertyValue("color");
 	else
-		color = _link.currentStyle['color'];
+		color = _link.currentStyle["color"];
 
 	return color;
 }
