@@ -141,10 +141,7 @@ function onSilverlightLoad(sender, args) {
   var control = sender.getHost();
   _global_isolated = control.Content.App.getIsolatedStorage();
 }
-/*
-function onSilverlightError(sender, args) {
-  _global_isolated = "";
-}*/
+
 function onSilverlightError(sender, args) {
   _global_isolated = "";
 }
