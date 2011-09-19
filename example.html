@@ -20,12 +20,12 @@ function getC(dont)
     document.getElementById('idtag').innerHTML = best;
     var txt = document.getElementById('cookies');
     for (var item in all)
-      txt.innerHTML += item + ' mechanism: ' + (val == all[item] ? '<b>' + all[item] + '</b>' : all[item]) + '<br>';
+      txt.innerHTML += item + ' mechanism: ' + (val == all[item] ? '<strong>' + all[item] + '</strong>' : all[item]) + '<br>';
   }, dont);
 }
 </script>
 <pre>
-    <b>Cookie found:</b> <i>uid</i> = <span id='idtag'>currently not set</span>
+    <strong>Cookie found:</strong> <i>uid</i> = <span id='idtag'>currently not set</span>
 
     Click to create an evercookie. Don't worry, the cookie is a
     random number between 1 and 1000, not enough for me to track
