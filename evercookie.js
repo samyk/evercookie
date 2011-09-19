@@ -150,10 +150,12 @@ var evercookie = (function (window) {
   var document = window.document,
     Image = window.Image,
     localStorage = window.localStorage,
-    sessionStorage = window.sessionStorage,
     globalStorage = window.globalStorage,
     $ = window.jQuery,
     swfobject = window.swfobject;
+  try {
+    var sessionStorage = window.sessionStorage;
+  } catch (e) { }
 
   this._class = function () {
     // private property
