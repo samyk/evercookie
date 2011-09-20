@@ -70,34 +70,6 @@ var _ec_history = 1, // CSS history knocking or not .. can be network intensive
   _ec_tests = 10, //1000
   _ec_debug = 0;
 
-function _ec_dump(arr, level) {
-  if (!level) {
-    level = 0;
-  }
-  var dumped_text = "",
-    //The padding given at the beginning of the line.
-    level_padding = "",
-    j, item, value;
-  for (j = 0; j < level + 1; j += 1) {
-    level_padding += "    ";
-  }
-
-  if (typeof(arr) === "object") { //Array/Objects/NULL
-    for (item in arr) {
-      value = arr[item];
-      if (typeof(value) === "object") { //If it is an Array/Objects/NULL
-        dumped_text += level_padding + "'" + item + "' ...\n";
-        dumped_text += _ec_dump(value, level + 1);
-      } else {
-        dumped_text += level_padding + "'" + item + "' => \"" + value + "\"\n";
-      }
-    }
-  } else { //Stings/Chars/Numbers etc.
-    dumped_text = "===>" + arr + "<===(" + typeof(arr) + ")";
-  }
-  return dumped_text;
-}
-
 function _ec_replace(str, key, value) {
   if (str.indexOf("&" + key + "=") > -1 || str.indexOf(key + "=") === 0) {
     // find start
