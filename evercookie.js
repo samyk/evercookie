@@ -333,7 +333,7 @@ var evercookie = (function (window) {
     };
 
     this.evercookie_lso = function (name, value) {
-      var div = document.getElementById("swfcontainer"),
+      var div = $("#swfcontainer"),
         flashvars = {},
         params = {},
         attributes = {};
