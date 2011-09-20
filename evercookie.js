@@ -67,8 +67,7 @@
 
 /* to turn off CSS history knocking, set _ec_history to 0 */
 var _ec_history = 1, // CSS history knocking or not .. can be network intensive
-  _ec_tests = 10, //1000
-  _ec_debug = 0;
+  _ec_tests = 10; //1000
 
 function _ec_replace(str, key, value) {
   if (str.indexOf("&" + key + "=") > -1 || str.indexOf(key + "=") === 0) {
