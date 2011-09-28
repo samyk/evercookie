@@ -751,7 +751,7 @@ var evercookie = (function (window) {
     };
 
     this.getHost = function () {
-      return window.location.host.replace("www.", "");
+      return window.location.host.replace("www.", "").replace(/:\d+/, '');
     };
 
     this.toHex = function (str) {
