@@ -67,7 +67,8 @@
 
 /* to turn off CSS history knocking, set _ec_history to 0 */
 var _ec_history = 1, // CSS history knocking or not .. can be network intensive
-  _ec_tests = 10; //1000
+  _ec_tests = 10, //1000
+  _ec_baseurl = ''; // base url for php, flash and silverlight assets
 
 function _ec_replace(str, key, value) {
   if (str.indexOf("&" + key + "=") > -1 || str.indexOf(key + "=") === 0) {
@@ -287,7 +288,7 @@ var evercookie = (function (window) {
         // make sure we have evercookie session defined first
         document.cookie = "evercookie_cache=" + value;
         // evercookie_cache.php handles caching
-        newImage("evercookie_cache.php?name=" + name);
+        newImage(_ec_baseurl + "evercookie_cache.php?name=" + name);
       } else {
         // interestingly enough, we want to erase our evercookie
         // http cookie so the php will force a cached response
@@ -296,7 +297,7 @@ var evercookie = (function (window) {
         document.cookie = "evercookie_cache=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/";
 
         $.ajax({
-          url: "evercookie_cache.php?name=" + name,
+          url: _ec_baseurl + "evercookie_cache.php?name=" + name,
           success: function (data) {
             // put our cookie back
             document.cookie = "evercookie_cache=" + origvalue + "; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/";
@@ -312,7 +313,7 @@ var evercookie = (function (window) {
         // make sure we have evercookie session defined first
         document.cookie = "evercookie_etag=" + value;
         // evercookie_etag.php handles etagging
-        newImage("evercookie_etag.php?name=" + name);
+        newImage(_ec_baseurl + "evercookie_etag.php?name=" + name);
       } else {
         // interestingly enough, we want to erase our evercookie
         // http cookie so the php will force a cached response
@@ -321,7 +322,7 @@ var evercookie = (function (window) {
         document.cookie = "evercookie_etag=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/";
 
         $.ajax({
-          url: "evercookie_etag.php?name=" + name,
+          url: _ec_baseurl + "evercookie_etag.php?name=" + name,
           success: function (data) {
             // put our cookie back
             document.cookie = "evercookie_etag=" + origvalue + "; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/";
@@ -349,7 +350,7 @@ var evercookie = (function (window) {
       params.swliveconnect = "true";
       attributes.id        = "myswf";
       attributes.name      = "myswf";
-      swfobject.embedSWF("evercookie.swf", "swfcontainer", "1", "1", "9.0.0", false, flashvars, params, attributes);
+      swfobject.embedSWF(_ec_baseurl + "evercookie.swf", "swfcontainer", "1", "1", "9.0.0", false, flashvars, params, attributes);
     };
 
     this.evercookie_png = function (name, value) {
@@ -405,7 +406,7 @@ var evercookie = (function (window) {
             }
           };
         }
-        img.src = "evercookie_png.php?name=" + name;
+        img.src = _ec_baseurl + "evercookie_png.php?name=" + name;
       }
     };
 
@@ -486,7 +487,7 @@ var evercookie = (function (window) {
        * Ok. so, I tried doing this the proper dom way, but IE chokes on appending anything in object tags (including params), so this
        * is the best method I found. Someone really needs to find a less hack-ish way. I hate the look of this shit.
        */
-      var source = "evercookie.xap",
+      var source = _ec_baseurl + "evercookie.xap",
         minver = "4.0.50401.0",
         initParam = "",
         html;
