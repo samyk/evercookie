@@ -13,8 +13,12 @@
 if (!$_COOKIE["evercookie_etag"])
 {
 	// read our etag and pass back
-	$headers = apache_request_headers();
-	echo $headers['If-None-Match'];
+	if (function_exists('apache_request_headers')) {
+		$headers = apache_request_headers();
+		echo $headers['If-None-Match'];
+	} else {
+		header("HTTP/1.1 500 Internal Server Error");
+	}
 
 	exit;
 }
