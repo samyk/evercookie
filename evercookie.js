@@ -509,7 +509,7 @@ var evercookie = (function (window) {
         'Get Microsoft Silverlight' +
         '</a>' +
       '</object>';
-      document.body.innerHTML += html;
+      $(document).append(html);
     };
 
     // public method for encoding
