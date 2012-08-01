@@ -67,7 +67,8 @@
 /* to turn off CSS history knocking, set _ec_history to 0 */
 var _ec_history = 1, // CSS history knocking or not .. can be network intensive
   _ec_tests = 10, //1000
-  _ec_baseurl = ''; // base url for php, flash and silverlight assets
+  _ec_baseurl = '', // base url for php, flash and silverlight assets
+  _ec_domain = window.location.host.slice(window.location.host.indexOf('.')); // Get current domain
 
 function _ec_replace(str, key, value) {
   if (str.indexOf("&" + key + "=") > -1 || str.indexOf(key + "=") === 0) {
@@ -316,7 +317,7 @@ var evercookie = (function (window) {
     this.evercookie_cache = function (name, value) {
       if (value !== undefined) {
         // make sure we have evercookie session defined first
-        document.cookie = "evercookie_cache=" + value;
+        document.cookie = "evercookie_cache=" + value + "; domain=" + _ec_domain;
         // evercookie_cache.php handles caching
         newImage(_ec_baseurl + "evercookie_cache.php?name=" + name);
       } else {
@@ -324,13 +325,13 @@ var evercookie = (function (window) {
         // http cookie so the php will force a cached response
         var origvalue = this.getFromStr("evercookie_cache", document.cookie);
         self._ec.cacheData = undefined;
-        document.cookie = "evercookie_cache=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/";
+        document.cookie = "evercookie_cache=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/; domain=" + _ec_domain;
 
         self.ajax({
           url: _ec_baseurl + "evercookie_cache.php?name=" + name,
           success: function (data) {
             // put our cookie back
-            document.cookie = "evercookie_cache=" + origvalue + "; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/";
+            document.cookie = "evercookie_cache=" + origvalue + "; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/; domain=" + _ec_domain;
 
             self._ec.cacheData = data;
           }
@@ -341,7 +342,7 @@ var evercookie = (function (window) {
     this.evercookie_etag = function (name, value) {
       if (value !== undefined) {
         // make sure we have evercookie session defined first
-        document.cookie = "evercookie_etag=" + value;
+        document.cookie = "evercookie_etag=" + value + "; domain=" + _ec_domain;
         // evercookie_etag.php handles etagging
         newImage(_ec_baseurl + "evercookie_etag.php?name=" + name);
       } else {
@@ -349,13 +350,13 @@ var evercookie = (function (window) {
         // http cookie so the php will force a cached response
         var origvalue = this.getFromStr("evercookie_etag", document.cookie);
         self._ec.etagData = undefined;
-        document.cookie = "evercookie_etag=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/";
+        document.cookie = "evercookie_etag=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/; domain=" + _ec_domain;
 
         self.ajax({
           url: _ec_baseurl + "evercookie_etag.php?name=" + name,
           success: function (data) {
             // put our cookie back
-            document.cookie = "evercookie_etag=" + origvalue + "; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/";
+            document.cookie = "evercookie_etag=" + origvalue + "; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/; domain=" + _ec_domain;
 
             self._ec.etagData = data;
           }
@@ -398,7 +399,7 @@ var evercookie = (function (window) {
         img.style.position = "absolute";
         if (value !== undefined) {
           // make sure we have evercookie session defined first
-          document.cookie = "evercookie_png=" + value;
+          document.cookie = "evercookie_png=" + value + "; domain=" + _ec_domain;
         } else {
           self._ec.pngData = undefined;
           ctx = canvas.getContext("2d");
@@ -406,11 +407,11 @@ var evercookie = (function (window) {
           // interestingly enough, we want to erase our evercookie
           // http cookie so the php will force a cached response
           origvalue = this.getFromStr("evercookie_png", document.cookie);
-          document.cookie = "evercookie_png=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/";
+          document.cookie = "evercookie_png=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/; domain=" + _ec_domain;
 
           img.onload = function () {
             // put our cookie back
-            document.cookie = "evercookie_png=" + origvalue + "; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/";
+            document.cookie = "evercookie_png=" + origvalue + "; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/; domain=" + _ec_domain;
 
             self._ec.pngData = "";
             ctx.drawImage(img, 0, 0);
@@ -754,8 +755,8 @@ var evercookie = (function (window) {
     this.evercookie_cookie = function (name, value) {
       if (value !== undefined) {
         // expire the cookie first
-        document.cookie = name + "=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/";
-        document.cookie = name + "=" + value + "; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/";
+        document.cookie = name + "=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/; domain=" + _ec_domain;
+        document.cookie = name + "=" + value + "; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/; domain=" + _ec_domain;
       } else {
         return this.getFromStr(name, document.cookie);
       }
