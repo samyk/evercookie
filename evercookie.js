@@ -277,11 +277,40 @@ var evercookie = (function (window) {
       img.src = src;
     }
 
-    this.ajax = function(settings) {
-      var x = new XMLHttpRequest();
-      x.onload = settings.success;
-      x.open('get', settings.url, true);
-      x.send();
+    this.ajax = function (settings) {
+      var headers, name, transports, transport, i, length;
+
+      headers = {
+        'X-Requested-With': 'XMLHttpRequest',
+        'Accept': 'text/javascript, text/html, application/xml, text/xml, */*'
+      };
+
+      transports = [
+        function () { return new XMLHttpRequest(); },
+        function () { return new ActiveXObject('Msxml2.XMLHTTP'); },
+        function () { return new ActiveXObject('Microsoft.XMLHTTP'); }
+      ];
+
+      for (i = 0, length = transports.length; i < length; i++) {
+        transport = transports[i];
+        try {
+          transport = transport();
+          break;
+        } catch (e) {
+        }
+      }
+
+      transport.onreadystatechange = function () {
+        if (transport.readyState !== 4) {
+          return;
+        }
+        settings.success(transport.responseText);
+      };
+      transport.open('get', settings.url, true);
+      for (name in headers) {
+        transport.setRequestHeader(name, headers[name]);
+      }
+      transport.send();
     };
 
     this.evercookie_cache = function (name, value) {
