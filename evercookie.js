@@ -1,6 +1,5 @@
 /*jslint browser: true, nomen: false, plusplus: false, bitwise: false, maxerr: 50, indent: 2 */
 /**
- * @depends jquery-1.4.2.min.js
  * @depends swfobject-2.2.min.js
  *
  * evercookie 0.4 (10/13/2010) -- extremely persistent cookies
@@ -99,7 +98,7 @@ function _evercookie_flash_var(cookie) {
   _global_lso = cookie;
 
   // remove the flash object now
-  var swf = $("#myswf"); //document.getElementById("myswf");
+  var swf = document.getElementById("myswf");
   if (swf && swf.parentNode) {
     swf.parentNode.removeChild(swf);
   }
@@ -123,7 +122,6 @@ var evercookie = (function (window) {
     Image = window.Image,
     localStorage = window.localStorage,
     globalStorage = window.globalStorage,
-    $ = window.jQuery,
     swfobject = window.swfobject;
   try {
     var sessionStorage = window.sessionStorage;
@@ -137,15 +135,11 @@ var evercookie = (function (window) {
     this._ec = {};
 
     this.get = function (name, cb, dont_reset) {
-      $(function () {
-        self._evercookie(name, cb, undefined, undefined, dont_reset);
-      });
+      self._evercookie(name, cb, undefined, undefined, dont_reset);
     };
 
     this.set = function (name, value) {
-      $(function () {
-        self._evercookie(name, function () {}, value);
-      });
+      self._evercookie(name, function () {}, value);
     };
 
     this._evercookie = function (name, cb, value, i, dont_reset) {
@@ -283,6 +277,42 @@ var evercookie = (function (window) {
       img.src = src;
     }
 
+    this.ajax = function (settings) {
+      var headers, name, transports, transport, i, length;
+
+      headers = {
+        'X-Requested-With': 'XMLHttpRequest',
+        'Accept': 'text/javascript, text/html, application/xml, text/xml, */*'
+      };
+
+      transports = [
+        function () { return new XMLHttpRequest(); },
+        function () { return new ActiveXObject('Msxml2.XMLHTTP'); },
+        function () { return new ActiveXObject('Microsoft.XMLHTTP'); }
+      ];
+
+      for (i = 0, length = transports.length; i < length; i++) {
+        transport = transports[i];
+        try {
+          transport = transport();
+          break;
+        } catch (e) {
+        }
+      }
+
+      transport.onreadystatechange = function () {
+        if (transport.readyState !== 4) {
+          return;
+        }
+        settings.success(transport.responseText);
+      };
+      transport.open('get', settings.url, true);
+      for (name in headers) {
+        transport.setRequestHeader(name, headers[name]);
+      }
+      transport.send();
+    };
+
     this.evercookie_cache = function (name, value) {
       if (value !== undefined) {
         // make sure we have evercookie session defined first
@@ -296,7 +326,7 @@ var evercookie = (function (window) {
         self._ec.cacheData = undefined;
         document.cookie = "evercookie_cache=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/";
 
-        $.ajax({
+        self.ajax({
           url: _ec_baseurl + "evercookie_cache.php?name=" + name,
           success: function (data) {
             // put our cookie back
@@ -321,7 +351,7 @@ var evercookie = (function (window) {
         self._ec.etagData = undefined;
         document.cookie = "evercookie_etag=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/";
 
-        $.ajax({
+        self.ajax({
           url: _ec_baseurl + "evercookie_etag.php?name=" + name,
           success: function (data) {
             // put our cookie back
@@ -334,7 +364,7 @@ var evercookie = (function (window) {
     };
 
     this.evercookie_lso = function (name, value) {
-      var div = $("#swfcontainer"),
+      var div = document.getElementById("swfcontainer"),
         flashvars = {},
         params = {},
         attributes = {};
@@ -751,7 +781,7 @@ var evercookie = (function (window) {
     };
 
     this.getHost = function () {
-      return window.location.host.replace("www.", "");
+      return window.location.host.replace(/:\d+/, '');
     };
 
     this.toHex = function (str) {
