@@ -16,6 +16,7 @@ if (!$_COOKIE["evercookie_etag"])
     if (!function_exists('apache_request_headers')) {
 
         function apache_request_headers() {
+            // Source: http://www.php.net/manual/en/function.apache-request-headers.php#70810
             $arh     = array();
             $rx_http = '/\AHTTP_/';
             foreach ($_SERVER as $key => $val) {
