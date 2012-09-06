@@ -368,7 +368,7 @@ var evercookie = (function (window) {
         flashvars = {},
         params = {},
         attributes = {};
-      if (!div.length) {
+      if (div===null || div === undefined || !div.length) {
         div = document.createElement("div");
         div.setAttribute("id", "swfcontainer");
         document.body.appendChild(div);
