@@ -177,7 +177,7 @@ function getC(dont)
 	reads each pixel of the Canvas tag, extracting the RGB values, and thus
 	producing the initial cookie data that was stored.
 
-	<b>How does the Web History storage work</b>
+	<b>How does the Web History storage work?</b>
 	When evercookie sets a cookie, assuming the Web History caching is enabled,
 	it Base64 encodes the data to be stored. Let's assume this data is "bcde"
 	in Base64. Evercookie then accesses the following URLs in the background:
