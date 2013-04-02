@@ -535,9 +535,6 @@ var evercookie = (function (window) {
         '<param name="windowless" value="true"/>' +
         '<param name="minRuntimeVersion" value="' + minver + '"/>' +
         '<param name="autoUpgrade" value="true"/>' +
-        '<a href="http://go.microsoft.com/fwlink/?LinkID=149156&v=' + minver + '" style="text-decoration:none">' +
-        'Get Microsoft Silverlight' +
-        '</a>' +
       '</object>';
       document.body.innerHTML+=html;
     };
