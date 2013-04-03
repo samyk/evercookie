@@ -38,14 +38,17 @@ public class EvercookieCacheServlet extends HttpServlet {
 
 		boolean cookieExists = false;
 		String cookieValue = null;
+		Cookie[] cookies = req.getCookies();
 
-		// Iterate over cookies until we find one named evercookie_cache
-		for (Cookie cookie : req.getCookies())
-		{
-			if (cookie.getName().equals("evercookie_cache")) {
-				cookieExists = true;
-				cookieValue = cookie.getValue();
-				break;
+		if (null != cookies) {
+			// Iterate over cookies until we find one named evercookie_cache
+			for (Cookie cookie : cookies)
+			{
+				if (cookie.getName().equals("evercookie_cache")) {
+					cookieExists = true;
+					cookieValue = cookie.getValue();
+					break;
+				}
 			}
 		}
 

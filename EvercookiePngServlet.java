@@ -42,6 +42,19 @@ public class EvercookiePngServlet extends HttpServlet {
 
 		boolean cookieExists = false;
 		String cookieValue = null;
+		Cookie[] cookies = req.getCookies();
+
+		if (null != cookies) {
+			// Iterate over cookies until we find one named evercookie_png
+			for (Cookie cookie : cookies)
+			{
+				if (cookie.getName().equals("evercookie_png")) {
+					cookieExists = true;
+					cookieValue = cookie.getValue();
+					break;
+				}
+			}
+		}
 
 		// Iterate over cookies until we find one named evercookie_png
 		for (Cookie cookie : req.getCookies())
