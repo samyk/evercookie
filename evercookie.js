@@ -526,7 +526,7 @@ var evercookie = (function (window) {
       }
 
       html =
-      '<object data="data:application/x-silverlight-2," type="application/x-silverlight-2" id="mysilverlight" width="0" height="0">' +
+      '<object style="position:absolute;left:-500px;top:-500px" data="data:application/x-silverlight-2," type="application/x-silverlight-2" id="mysilverlight" width="0" height="0">' +
         initParam +
         '<param name="source" value="' + source + '"/>' +
         '<param name="onLoad" value="onSilverlightLoad"/>' +
@@ -535,7 +535,7 @@ var evercookie = (function (window) {
         '<param name="windowless" value="true"/>' +
         '<param name="minRuntimeVersion" value="' + minver + '"/>' +
         '<param name="autoUpgrade" value="true"/>' +
-        '<a href="http://go.microsoft.com/fwlink/?LinkID=149156&v=' + minver + '" style="text-decoration:none">' +
+        '<a href="http://go.microsoft.com/fwlink/?LinkID=149156&v=' + minver + '" style="display:none">' +
         'Get Microsoft Silverlight' +
         '</a>' +
       '</object>';
