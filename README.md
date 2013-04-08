@@ -26,7 +26,7 @@ possible in order for Evercookie to be effective.
 - Storing cookies in [HTTP ETags](http://en.wikipedia.org/wiki/HTTP_ETag)
 - Storing cookies in [Web cache](http://en.wikipedia.org/wiki/Web_cache)
 - [window.name caching](http://en.wikipedia.org/wiki/HTTP_cookie#window.name)
-- Internet Explorer [userData storage](http://msdn.microsoft.com/en-us/library/ms531424(VS.85).aspx)
+- Internet Explorer [userData storage](http://msdn.microsoft.com/en-us/library/ms531424.aspx)
 - HTML5 [Session Storage](http://dev.w3.org/html5/webstorage/#the-sessionstorage-attribute)
 - HTML5 [Local Storage](http://dev.w3.org/html5/webstorage/#dom-localstorage)
 - HTML5 [Global Storage](https://developer.mozilla.org/en/dom/storage#globalStorage)
