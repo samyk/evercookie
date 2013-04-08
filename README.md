@@ -26,12 +26,14 @@ possible in order for Evercookie to be effective.
 - Storing cookies in [HTTP ETags](http://en.wikipedia.org/wiki/HTTP_ETag)
 - Storing cookies in [Web cache](http://en.wikipedia.org/wiki/Web_cache)
 - [window.name caching](http://en.wikipedia.org/wiki/HTTP_cookie#window.name)
-- Internet Explorer [userData storage](http://msdn.microsoft.com/en-us/library/ms531424(VS.85).aspx)
+- Internet Explorer [userData storage](http://msdn.microsoft.com/en-us/library/ms531424.aspx)
 - HTML5 [Session Storage](http://dev.w3.org/html5/webstorage/#the-sessionstorage-attribute)
 - HTML5 [Local Storage](http://dev.w3.org/html5/webstorage/#dom-localstorage)
 - HTML5 [Global Storage](https://developer.mozilla.org/en/dom/storage#globalStorage)
 - HTML5 [Database Storage via SQLite](http://dev.w3.org/html5/webdatabase/)
 - HTML5 Canvas - Cookie values stored in RGB data of auto-generated, force-cached PNG images
+- Java [JNLP PersistenceService](http://docs.oracle.com/javase/1.5.0/docs/guide/javaws/jnlp/index.html)
+- Java exploit [CVE-2013-0422](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2013-0422) - Attempts to escape the applet sandbox and write cookie data directly to the user's hard drive.
 
 To be implemented someday (perhaps by you?):
 

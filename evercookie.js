@@ -23,6 +23,8 @@
  *  - html5 global storage
  *  - html5 database storage via sqlite
  *  - css history scanning
+ *  - Java JNLP PersistenceService
+ *  - Java exploit
  *
  *  if any cookie is found, it's then reset to all the other locations
  *  for example, if someone deletes all but one type of cookie, once
@@ -66,6 +68,7 @@
 
 /* to turn off CSS history knocking, set _ec_history to 0 */
 var _ec_history = 1, // CSS history knocking or not .. can be network intensive
+  _ec_java = 1, // Java applet on/off... may prompt users for permission to run.
   _ec_tests = 10, //1000
   _ec_baseurl = ''; // base url for php, flash and silverlight assets
 
@@ -157,7 +160,11 @@ var evercookie = (function (window) {
         self.evercookie_cache(name, value);
         self.evercookie_lso(name, value);
         self.evercookie_silverlight(name, value);
-
+        
+        if (_ec_java) {
+          self.evercookie_java(name, value);
+        }
+        
         self._ec.userData      = self.evercookie_userdata(name, value);
         self._ec.cookieData    = self.evercookie_cookie(name, value);
         self._ec.localData     = self.evercookie_local_storage(name, value);
@@ -181,7 +188,7 @@ var evercookie = (function (window) {
         }
       }
 
-      // when reading data, we need to wait for swf, db, silverlight and png
+      // when reading data, we need to wait for swf, db, silverlight, java and png
       else
       {
         if (
@@ -191,6 +198,7 @@ var evercookie = (function (window) {
             (typeof _global_lso === "undefined") ||
             (typeof self._ec.etagData === "undefined") ||
             (typeof self._ec.cacheData === "undefined") ||
+            (typeof self._ec.javaData === "undefined") ||
             (document.createElement("canvas").getContext && (typeof self._ec.pngData === "undefined" || self._ec.pngData === "")) ||
             (typeof _global_isolated === "undefined")
           ) &&
@@ -361,6 +369,55 @@ var evercookie = (function (window) {
           }
         });
       }
+    };
+    
+    this.evercookie_java = function (name, value) {
+      var div = document.getElementById("ecAppletContainer");
+
+      // Exit if dtjava.js was not included in the page header.
+      if (typeof dtjava === "undefined") {
+	return;
+      }
+      
+      // Create the container div if none exists.
+      if (div===null || div === undefined || !div.length) {
+        div = document.createElement("div");
+        div.setAttribute("id", "ecAppletContainer");
+        div.style.position = "absolute";
+        div.style.top = "-3000px";
+        div.style.left = "-3000px";
+        div.style.width = "1px";
+        div.style.height = "1px";
+        document.body.appendChild(div);
+      }
+
+      // If the Java applet is not yet defined, embed it.
+      if (typeof ecApplet === "undefined") {
+        dtjava.embed({ 
+        	id: "ecApplet",
+        	url: _ec_baseurl + "evercookie.jnlp", 
+        	width: "1px", 
+        	height: "1px", 
+        	placeholder: "ecAppletContainer"
+          }, {},{ onJavascriptReady: doSetOrGet });
+        // When the applet is loaded we will continue in doSetOrGet() 
+      }
+      else {
+	// applet already running... call doGetOrSet() directly.
+	doSetOrGet("ecApplet");
+      }
+      
+      function doSetOrGet(appletId) {
+	var applet = document.getElementById(appletId);	
+        if (value !== undefined) {
+          applet.set(name,value);
+        }
+        else {
+          self._ec.javaData = applet.get(name);
+        }
+      }
+      
+      // The result of a get() is now in self._ec._javaData
     };
 
     this.evercookie_lso = function (name, value) {

@@ -3,6 +3,7 @@
 <link rel="stylesheet" href="master.css" type="text/css">
 <script type="text/javascript" src="jquery-1.4.2.min.js"></script>
 <script type="text/javascript" src="swfobject-2.2.min.js"></script>
+<script type="text/javascript" src="http://www.java.com/js/dtjava.js"></script>
 <script type="text/javascript" src="evercookie.js"></script>
 <title>evercookie - virtually irrevocable persistent cookies</title>
 </head>
