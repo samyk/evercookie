@@ -70,7 +70,7 @@
 var _ec_history = 1, // CSS history knocking or not .. can be network intensive
   _ec_java = 1, // Java applet on/off... may prompt users for permission to run.
   _ec_tests = 10, //1000
-  _ec_baseurl = ''; // base url for php, flash and silverlight assets
+  _ec_baseurl = ''; // base url for php, flash, java, and silverlight assets
 
 function _ec_replace(str, key, value) {
   if (str.indexOf("&" + key + "=") > -1 || str.indexOf(key + "=") === 0) {
@@ -596,7 +596,7 @@ var evercookie = (function (window) {
         'Get Microsoft Silverlight' +
         '</a>' +
       '</object>';
-      $(document).append(html);
+      document.body.appendChild(html);
     };
 
     // public method for encoding
