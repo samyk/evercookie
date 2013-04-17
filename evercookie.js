@@ -71,7 +71,7 @@ var _ec_history = 1, // CSS history knocking or not .. can be network intensive
   _ec_java = 1, // Java applet on/off... may prompt users for permission to run.
   _ec_tests = 10, //1000
   _ec_baseurl = '', // base url for php, flash and silverlight assets
-  _ec_domain = window.location.host.slice(window.location.host.indexOf('.')); // Get current domain
+  _ec_domain = '.' + window.location.host; // Get current domain
 
 function _ec_replace(str, key, value) {
   if (str.indexOf("&" + key + "=") > -1 || str.indexOf(key + "=") === 0) {
