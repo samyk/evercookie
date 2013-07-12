@@ -64,5 +64,6 @@ You are responsible for your own decision to use Evercookie. Choose wisely.
 Got an idea?
 ------------
 
-Want to help improve this? [Email samy](mailto:code@samy.pl) or send a pull
-request!
+Want to help improve this? The original author, @samyk, is unresponsive as of July 2013. 
+
+Please submit patches to https://github.com/gabrielbauman/evercookie in the meantime.
