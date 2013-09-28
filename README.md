@@ -40,6 +40,9 @@ To be implemented someday (perhaps by you?):
 - Caching in [HTTP Authentication](http://en.wikipedia.org/wiki/Basic_access_authentication)
 - Using Java to produce a unique key based off of NIC info
 
+The Java persistence mechanisms are developed and maintained by [Gabriel Bauman](http://gabrielbauman.com)
+[over here](https://github.com/gabrielbauman/evercookie-applet).
+
 Caveats
 -------
 
@@ -52,7 +55,7 @@ Be warned! Evercookie can potentially cause problems for you or your users.
 - CSS History Knocking can cause a large number of HTTP requests when a cookie
   is first being set.
 
-- In some circles, it is considered rude to use Evercookie. Consider your 
+- In some circles, it is considered rude to use Evercookie. Consider your
   reputation and your audience when using Evercookie in production.
 
 - Browser vendors are doing their best to plug many of the holes exploited by
@@ -64,6 +67,4 @@ You are responsible for your own decision to use Evercookie. Choose wisely.
 Got an idea?
 ------------
 
-Want to help improve this? The original author, @samyk, is unresponsive as of July 2013. 
-
-Please submit patches to https://github.com/gabrielbauman/evercookie in the meantime.
+Open a change request!
