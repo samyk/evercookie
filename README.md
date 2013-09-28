@@ -67,4 +67,4 @@ You are responsible for your own decision to use Evercookie. Choose wisely.
 Got an idea?
 ------------
 
-Open a change request!
+Open a pull request!
