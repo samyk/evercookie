@@ -1,3 +1,18 @@
+gabrielbauman/evercookie master :: as of now
+	- updated README.md (gabrielbauman)
+	- added .gitignore (gabrielbauman)
+	- fixed cookie domain on non-standard ports (gabrielbauman)
+	- removed evercookie.min.js to simplify merges (gabrielbauman)
+	- added domains to standard http cookies (Justin)
+	- added Java servlet port of PHP components (gabrielbauman)
+	- added Java applet persistence method, see http://github.com/gabrielbauman/evercookie-applet (gabrielbauman)
+	- disabled Silverlight auto-upgrade interruption (gabrielbauman)
+	- fixed Silverlight object appearing on screen (gabrielbauman) 
+	- disabled Install Silverlight link (gabrielbauman)
+	- removed duplicate/unused evercookie.php (gabrielbauman)
+	- removed last remaining dependency on jQuery (gabrielbauman)
+	- added README.md (gabrielbauman)
+
 evercookie 0.4 :: 10/13/2010
 	- added Silverlight Isolated Storage support
 	- added window.name storage support
