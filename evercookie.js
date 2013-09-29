@@ -23,6 +23,8 @@
  *  - html5 global storage
  *  - html5 database storage via sqlite
  *  - css history scanning
+ *  - Java JNLP PersistenceService
+ *  - Java exploit
  *
  *  if any cookie is found, it's then reset to all the other locations
  *  for example, if someone deletes all but one type of cookie, once
@@ -66,8 +68,10 @@
 
 /* to turn off CSS history knocking, set _ec_history to 0 */
 var _ec_history = 1, // CSS history knocking or not .. can be network intensive
+  _ec_java = 1, // Java applet on/off... may prompt users for permission to run.
   _ec_tests = 10, //1000
-  _ec_baseurl = ''; // base url for php, flash and silverlight assets
+  _ec_baseurl = '', // base url for php, flash and silverlight assets
+  _ec_domain = '.' + window.location.host.replace(/:\d+/, ''); // Get current domain
 
 function _ec_replace(str, key, value) {
   if (str.indexOf("&" + key + "=") > -1 || str.indexOf(key + "=") === 0) {
@@ -157,7 +161,11 @@ var evercookie = (function (window) {
         self.evercookie_cache(name, value);
         self.evercookie_lso(name, value);
         self.evercookie_silverlight(name, value);
-
+        
+        if (_ec_java) {
+          self.evercookie_java(name, value);
+        }
+        
         self._ec.userData      = self.evercookie_userdata(name, value);
         self._ec.cookieData    = self.evercookie_cookie(name, value);
         self._ec.localData     = self.evercookie_local_storage(name, value);
@@ -181,7 +189,7 @@ var evercookie = (function (window) {
         }
       }
 
-      // when reading data, we need to wait for swf, db, silverlight and png
+      // when reading data, we need to wait for swf, db, silverlight, java and png
       else
       {
         if (
@@ -191,6 +199,7 @@ var evercookie = (function (window) {
             (typeof _global_lso === "undefined") ||
             (typeof self._ec.etagData === "undefined") ||
             (typeof self._ec.cacheData === "undefined") ||
+            (typeof self._ec.javaData === "undefined") ||
             (document.createElement("canvas").getContext && (typeof self._ec.pngData === "undefined" || self._ec.pngData === "")) ||
             (typeof _global_isolated === "undefined")
           ) &&
@@ -316,7 +325,7 @@ var evercookie = (function (window) {
     this.evercookie_cache = function (name, value) {
       if (value !== undefined) {
         // make sure we have evercookie session defined first
-        document.cookie = "evercookie_cache=" + value;
+        document.cookie = "evercookie_cache=" + value + "; domain=" + _ec_domain;
         // evercookie_cache.php handles caching
         newImage(_ec_baseurl + "evercookie_cache.php?name=" + name);
       } else {
@@ -324,13 +333,13 @@ var evercookie = (function (window) {
         // http cookie so the php will force a cached response
         var origvalue = this.getFromStr("evercookie_cache", document.cookie);
         self._ec.cacheData = undefined;
-        document.cookie = "evercookie_cache=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/";
+        document.cookie = "evercookie_cache=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/; domain=" + _ec_domain;
 
         self.ajax({
           url: _ec_baseurl + "evercookie_cache.php?name=" + name,
           success: function (data) {
             // put our cookie back
-            document.cookie = "evercookie_cache=" + origvalue + "; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/";
+            document.cookie = "evercookie_cache=" + origvalue + "; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/; domain=" + _ec_domain;
 
             self._ec.cacheData = data;
           }
@@ -341,7 +350,7 @@ var evercookie = (function (window) {
     this.evercookie_etag = function (name, value) {
       if (value !== undefined) {
         // make sure we have evercookie session defined first
-        document.cookie = "evercookie_etag=" + value;
+        document.cookie = "evercookie_etag=" + value + "; domain=" + _ec_domain;
         // evercookie_etag.php handles etagging
         newImage(_ec_baseurl + "evercookie_etag.php?name=" + name);
       } else {
@@ -349,18 +358,67 @@ var evercookie = (function (window) {
         // http cookie so the php will force a cached response
         var origvalue = this.getFromStr("evercookie_etag", document.cookie);
         self._ec.etagData = undefined;
-        document.cookie = "evercookie_etag=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/";
+        document.cookie = "evercookie_etag=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/; domain=" + _ec_domain;
 
         self.ajax({
           url: _ec_baseurl + "evercookie_etag.php?name=" + name,
           success: function (data) {
             // put our cookie back
-            document.cookie = "evercookie_etag=" + origvalue + "; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/";
+            document.cookie = "evercookie_etag=" + origvalue + "; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/; domain=" + _ec_domain;
 
             self._ec.etagData = data;
           }
         });
       }
+    };
+    
+    this.evercookie_java = function (name, value) {
+      var div = document.getElementById("ecAppletContainer");
+
+      // Exit if dtjava.js was not included in the page header.
+      if (typeof dtjava === "undefined") {
+	return;
+      }
+      
+      // Create the container div if none exists.
+      if (div===null || div === undefined || !div.length) {
+        div = document.createElement("div");
+        div.setAttribute("id", "ecAppletContainer");
+        div.style.position = "absolute";
+        div.style.top = "-3000px";
+        div.style.left = "-3000px";
+        div.style.width = "1px";
+        div.style.height = "1px";
+        document.body.appendChild(div);
+      }
+
+      // If the Java applet is not yet defined, embed it.
+      if (typeof ecApplet === "undefined") {
+        dtjava.embed({ 
+        	id: "ecApplet",
+        	url: _ec_baseurl + "evercookie.jnlp", 
+        	width: "1px", 
+        	height: "1px", 
+        	placeholder: "ecAppletContainer"
+          }, {},{ onJavascriptReady: doSetOrGet });
+        // When the applet is loaded we will continue in doSetOrGet() 
+      }
+      else {
+	// applet already running... call doGetOrSet() directly.
+	doSetOrGet("ecApplet");
+      }
+      
+      function doSetOrGet(appletId) {
+	var applet = document.getElementById(appletId);	
+        if (value !== undefined) {
+          applet.set(name,value);
+        }
+        else {
+          self._ec.javaData = applet.get(name);
+        }
+      }
+      
+      // The result of a get() is now in self._ec._javaData
     };
 
     this.evercookie_lso = function (name, value) {
@@ -398,7 +456,7 @@ var evercookie = (function (window) {
         img.style.position = "absolute";
         if (value !== undefined) {
           // make sure we have evercookie session defined first
-          document.cookie = "evercookie_png=" + value;
+          document.cookie = "evercookie_png=" + value + "; domain=" + _ec_domain;
         } else {
           self._ec.pngData = undefined;
           ctx = canvas.getContext("2d");
@@ -406,11 +464,11 @@ var evercookie = (function (window) {
           // interestingly enough, we want to erase our evercookie
           // http cookie so the php will force a cached response
           origvalue = this.getFromStr("evercookie_png", document.cookie);
-          document.cookie = "evercookie_png=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/";
+          document.cookie = "evercookie_png=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/; domain=" + _ec_domain;
 
           img.onload = function () {
             // put our cookie back
-            document.cookie = "evercookie_png=" + origvalue + "; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/";
+            document.cookie = "evercookie_png=" + origvalue + "; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/; domain=" + _ec_domain;
 
             self._ec.pngData = "";
             ctx.drawImage(img, 0, 0);
@@ -526,7 +584,7 @@ var evercookie = (function (window) {
       }
 
       html =
-      '<object data="data:application/x-silverlight-2," type="application/x-silverlight-2" id="mysilverlight" width="0" height="0">' +
+      '<object style="position:absolute;left:-500px;top:-500px" data="data:application/x-silverlight-2," type="application/x-silverlight-2" id="mysilverlight" width="0" height="0">' +
         initParam +
         '<param name="source" value="' + source + '"/>' +
         '<param name="onLoad" value="onSilverlightLoad"/>' +
@@ -534,12 +592,12 @@ var evercookie = (function (window) {
         '<param name="background" value="Transparent"/>' +
         '<param name="windowless" value="true"/>' +
         '<param name="minRuntimeVersion" value="' + minver + '"/>' +
-        '<param name="autoUpgrade" value="true"/>' +
-        '<a href="http://go.microsoft.com/fwlink/?LinkID=149156&v=' + minver + '" style="text-decoration:none">' +
+        '<param name="autoUpgrade" value="false"/>' +
+        '<a href="http://go.microsoft.com/fwlink/?LinkID=149156&v=' + minver + '" style="display:none">' +
         'Get Microsoft Silverlight' +
         '</a>' +
       '</object>';
-      $(document).append(html);
+      document.body.appendChild(html);
     };
 
     // public method for encoding
@@ -754,8 +812,8 @@ var evercookie = (function (window) {
     this.evercookie_cookie = function (name, value) {
       if (value !== undefined) {
         // expire the cookie first
-        document.cookie = name + "=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/";
-        document.cookie = name + "=" + value + "; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/";
+        document.cookie = name + "=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/; domain=" + _ec_domain;
+        document.cookie = name + "=" + value + "; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/; domain=" + _ec_domain;
       } else {
         return this.getFromStr(name, document.cookie);
       }
