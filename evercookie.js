@@ -138,6 +138,7 @@
     baseurl: '', // base url for php, flash and silverlight assets
     silverlight: true, // you might want to turn it off https://github.com/samyk/evercookie/issues/45
     domain: '.' + window.location.host.replace(/:\d+/, ''), // Get current domain
+    authPath: '/evercookie_auth.php', // set to false to disable Basic Authentication cache
     pngCookieName: 'evercookie_png',
     pngPath: '/evercookie_png.php',
     etagCookieName: 'evercookie_etag',
@@ -210,6 +211,9 @@
         self.evercookie_lso(name, value);
         if (opts.silverlight) {
           self.evercookie_silverlight(name, value);
+        }
+        if (opts.authPath) {
+          self.evercookie_auth(name, value);
         }
         if (_ec_java) {
           self.evercookie_java(name, value);
@@ -384,6 +388,20 @@
             document.cookie = opts.cacheCookieName + "=" + origvalue + "; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/; domain=" + _ec_domain;
 
             self._ec.cacheData = data;
+          }
+        });
+      }
+    };
+    this.evercookie_auth = function (name, value) {
+      if (value !== undefined) {
+        // {{opts.authPath}} handles Basic Access Authentication
+        newImage('//' + value + '@' + location.host + _ec_baseurl + opts.authPath + "?name=" + name);
+      }
+      else {
+        self.ajax({
+          url: _ec_baseurl + opts.authPath + "?name=" + name,
+          success: function (data) {
+            self._ec.authData = data;
           }
         });
       }
