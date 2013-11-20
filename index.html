@@ -60,7 +60,7 @@
 </PRE>
 <H2>EXAMPLE</H2><PRE>
 <script>
-var val = "<?php echo rand(1, 1000) ?>";
+var val = '' + Math.floor(Math.random()*1000);
 var ec = new evercookie();
 
 getC(0);
