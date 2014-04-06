@@ -657,7 +657,11 @@
         'Get Microsoft Silverlight' +
         '</a>' +
       '</object>';
+      try{
       document.body.appendChild(html);
+      }catch(ex){
+      	
+      }
     };
 
     // public method for encoding
