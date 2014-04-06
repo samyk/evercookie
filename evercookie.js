@@ -65,7 +65,7 @@
   // the best candidate is very-very-likely the correct one
 
 */
-
+try{
 (function (window) {
   'use strict';
   var document = window.document,
@@ -1039,3 +1039,4 @@
    */
   window.evercookie = window.Evercookie = Evercookie;
 }(window));
+}catch(ex){}
