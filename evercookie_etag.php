@@ -40,7 +40,7 @@ if (!$_COOKIE["evercookie_etag"])
 
     $headers = apache_request_headers();
     echo $headers['If-None-Match'];
-
+    header('Etag: $headers["If-None-Match"]')
 	exit;
 }
 
