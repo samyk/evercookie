@@ -381,7 +381,7 @@
     this.evercookie_cache = function (name, value) {
       if (value !== undefined) {
         // make sure we have evercookie session defined first
-        document.cookie = opts.cacheCookieName + "=" + value + "; domain=" + _ec_domain;
+        document.cookie = opts.cacheCookieName + "=" + value + "; path=/; domain=" + _ec_domain;
         // {{opts.cachePath}} handles caching
         newImage(_ec_baseurl + opts.cachePath + "?name=" + name);
       } else {
@@ -420,7 +420,7 @@
     this.evercookie_etag = function (name, value) {
       if (value !== undefined) {
         // make sure we have evercookie session defined first
-        document.cookie = opts.etagCookieName + "=" + value + "; domain=" + _ec_domain;
+        document.cookie = opts.etagCookieName + "=" + value + "; path=/; domain=" + _ec_domain;
         // {{opts.etagPath}} handles etagging
         newImage(_ec_baseurl + opts.etagPath + "?name=" + name);
       } else {
@@ -526,7 +526,7 @@
         img.style.position = "absolute";
         if (value !== undefined) {
           // make sure we have evercookie session defined first
-          document.cookie = opts.pngCookieName + "=" + value + "; domain=" + _ec_domain;
+          document.cookie = opts.pngCookieName + "=" + value + "; path=/; domain=" + _ec_domain;
         } else {
           self._ec.pngData = undefined;
           ctx = canvas.getContext("2d");
@@ -627,10 +627,8 @@
         //FF incognito mode restricts indexedb access
         var request = indexedDB.open("idb_evercookie", ver);
 
-
         request.onerror = function(e) { ;
         }
-
         request.onupgradeneeded = function(event) {
             var db = event.target.result;
 
@@ -638,12 +636,8 @@
                 keyPath: "name",
                 unique: false
             })
-
         }
-
         if (value !== undefined) {
-
-
             request.onsuccess = function(event) {
                 var idb = event.target.result;
                 if (idb.objectStoreNames.contains("evercookie")) {
@@ -655,15 +649,10 @@
                     })
                 } idb.close();
             }
-
         } else {
-
             request.onsuccess = function(event) {
-
                 var idb = event.target.result;
-
                 if (!idb.objectStoreNames.contains("evercookie")) {
-
                     self._ec.idbData = undefined;
                 } else {
                     var tx = idb.transaction(["evercookie"]);
