@@ -104,6 +104,15 @@
     }
   }
 
+ function idb() {
+    if ('indexedDB' in window) {
+        return true
+    } else if (window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB) {
+        return true
+    } else {
+        return false
+    }
+  } 
 
   // necessary for flash to communicate with js...
   // please implement a better way
@@ -249,6 +258,7 @@
           (
             // we support local db and haven't read data in yet
             (window.openDatabase && typeof self._ec.dbData === "undefined") ||
+            (idb() && (typeof self._ec.idbData === "undefined" || self._ec.idbData === "")) ||
             (typeof _global_lso === "undefined") ||
             (typeof self._ec.etagData === "undefined") ||
             (typeof self._ec.cacheData === "undefined") ||
@@ -602,6 +612,78 @@
         }
       } catch (e) { }
     };
+ 
+    this.evercookie_indexdb_storage = function(name, value) {
+    try {
+    if (!('indexedDB' in window)) {
+
+        indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+        IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction;
+        IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange;
+    }
+
+    if (indexedDB) {
+        var ver = 1;
+        //FF incognito mode restricts indexedb access
+        var request = indexedDB.open("idb_evercookie", ver);
+
+
+        request.onerror = function(e) { ;
+        }
+
+        request.onupgradeneeded = function(event) {
+            var db = event.target.result;
+
+            var store = db.createObjectStore("evercookie", {
+                keyPath: "name",
+                unique: false
+            })
+
+        }
+
+        if (value !== undefined) {
+
+
+            request.onsuccess = function(event) {
+                var idb = event.target.result;
+                if (idb.objectStoreNames.contains("evercookie")) {
+                    var tx = idb.transaction(["evercookie"], "readwrite");
+                    var objst = tx.objectStore("evercookie");
+                    var qr = objst.put({
+                        "name": name,
+                        "value": value
+                    })
+                } idb.close();
+            }
+
+        } else {
+
+            request.onsuccess = function(event) {
+
+                var idb = event.target.result;
+
+                if (!idb.objectStoreNames.contains("evercookie")) {
+
+                    self._ec.idbData = undefined;
+                } else {
+                    var tx = idb.transaction(["evercookie"]);
+                    var objst = tx.objectStore("evercookie");
+                    var qr = objst.get(name);
+
+                    qr.onsuccess = function(event) {
+                        if (qr.result === undefined) {
+                            self._ec.idbData = undefined
+                        } else {
+                            self._ec.idbData = qr.result.value;
+                        }
+                    }
+                }
+           idb.close();
+            }
+        }
+    }
+ } catch (e) {}
+};
 
     this.evercookie_session_storage = function (name, value) {
       try {
