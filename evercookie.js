@@ -70,9 +70,13 @@
   'use strict';
   var document = window.document,
     Image = window.Image,
-    localStorage = window.localStorage,
     globalStorage = window.globalStorage,
     swfobject = window.swfobject;
+
+  try{
+    var localStore = window.localStorage
+  }catch(ex){}
+  
   try {
     var sessionStorage = window.sessionStorage;
   } catch (e) { }
@@ -570,11 +574,11 @@
 
     this.evercookie_local_storage = function (name, value) {
       try {
-        if (localStorage) {
+        if (localStore) {
           if (value !== undefined) {
-            localStorage.setItem(name, value);
+            localStore.setItem(name, value);
           } else {
-            return localStorage.getItem(name);
+            return localStore.getItem(name);
           }
         }
       } catch (e) { }
@@ -739,7 +743,11 @@
         'Get Microsoft Silverlight' +
         '</a>' +
       '</object>';
+      try{
       document.body.appendChild(html);
+      }catch(ex){
+      	
+      }
     };
 
     // public method for encoding
