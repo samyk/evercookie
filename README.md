@@ -32,6 +32,7 @@ possible in order for Evercookie to be effective.
 - HTML5 [Global Storage](https://developer.mozilla.org/en/dom/storage#globalStorage)
 - HTML5 [Database Storage via SQLite](http://dev.w3.org/html5/webdatabase/)
 - HTML5 Canvas - Cookie values stored in RGB data of auto-generated, force-cached PNG images ([Backend server](#backend-server) required)
+- HTML5 [IndexedDB](http://www.w3.org/TR/IndexedDB/)
 - Java [JNLP PersistenceService](http://docs.oracle.com/javase/1.5.0/docs/guide/javaws/jnlp/index.html)
 - Java exploit [CVE-2013-0422](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2013-0422) - Attempts to escape the applet sandbox and write cookie data directly to the user's hard drive.
 
