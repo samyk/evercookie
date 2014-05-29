@@ -386,8 +386,11 @@ try{
       if (value !== undefined) {
         // make sure we have evercookie session defined first
         document.cookie = opts.cacheCookieName + "=" + value + "; path=/; domain=" + _ec_domain;
-        // {{opts.cachePath}} handles caching
-        newImage(_ec_baseurl + opts.cachePath + "?name=" + name);
+        // {{ajax request to opts.cachePath}} handles caching
+        self.ajax({
+          url: _ec_baseurl + opts.cachePath + "?name=" + name,
+          success: function (data) {}
+        });
       } else {
         // interestingly enough, we want to erase our evercookie
         // http cookie so the php will force a cached response
@@ -425,8 +428,11 @@ try{
       if (value !== undefined) {
         // make sure we have evercookie session defined first
         document.cookie = opts.etagCookieName + "=" + value + "; path=/; domain=" + _ec_domain;
-        // {{opts.etagPath}} handles etagging
-        newImage(_ec_baseurl + opts.etagPath + "?name=" + name);
+        // {{ajax request to opts.etagPath}} handles etagging
+        self.ajax({
+          url: _ec_baseurl + opts.etagPath + "?name=" + name,
+          success: function (data) {}
+        });
       } else {
         // interestingly enough, we want to erase our evercookie
         // http cookie so the php will force a cached response
