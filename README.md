@@ -13,6 +13,8 @@ one is still intact.
 If the LSO mechanism is available, Evercookie may even propagate cookies
 between different browsers on the same client machine!
 
+By [Samy Kamkar](http://samy.pl), with awesome [contributions from others](https://github.com/samyk/evercookie/graphs/contributors)
+
 Browser Storage Mechanisms
 --------------------------
 
@@ -38,17 +40,18 @@ possible in order for Evercookie to be effective.
 
 To be implemented someday (perhaps by you?):
 
-- Caching in [HTTP Authentication](http://en.wikipedia.org/wiki/Basic_access_authentication)
+- Google Gears
 - Using Java to produce a unique key based off of NIC info
+- Caching in [HTTP Authentication](http://en.wikipedia.org/wiki/Basic_access_authentication)
+- Other methods? Please comment!
 
 The Java persistence mechanisms are developed and maintained by [Gabriel Bauman](http://gabrielbauman.com)
 [over here](https://github.com/gabrielbauman/evercookie-applet).
 
 Backend Server
 --------------
-Some of the storage mechanisms require backend server. This package comes with PHP implementation of etag, cache and png.
-For Node.js version, please visit [node-evercookie](https://github.com/truongsinh/node-evercookie).
-If you port backend server to other languages, please open a pull request!
+Some of the storage mechanisms require a backend server. This package comes with PHP implementation of the etag, cache and png backend servers. For a Node.js version, please visit [node-evercookie](https://github.com/truongsinh/node-evercookie).
+If you port a backend server to another languages, please open a pull request!
 
 Caveats
 -------
