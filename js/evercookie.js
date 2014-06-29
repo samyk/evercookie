@@ -148,11 +148,11 @@ try{
     history: true, // CSS history knocking or not .. can be network intensive
     java: true, // Java applet on/off... may prompt users for permission to run.
     tests: 10,  // 1000 what is it, actually?
+    silverlight: true, // you might want to turn it off https://github.com/samyk/evercookie/issues/45
+    domain: '.' + window.location.host.replace(/:\d+/, ''), // Get current domain
     baseurl: '', // base url for php, flash and silverlight assets
     asseturi: '/assets', // assets = .fla, .jar, etc
     phpuri: '/php', // assets = .fla, .jar, etc
-    silverlight: true, // you might want to turn it off https://github.com/samyk/evercookie/issues/45
-    domain: '.' + window.location.host.replace(/:\d+/, ''), // Get current domain
     authPath: '/evercookie_auth.php', // set to false to disable Basic Authentication cache
     pngCookieName: 'evercookie_png',
     pngPath: '/evercookie_png.php',
@@ -481,7 +481,7 @@ try{
       if (typeof ecApplet === "undefined") {
         dtjava.embed({ 
         	id: "ecApplet",
-        	url: _ec_asseturi + "evercookie.jnlp", 
+        	url: _ec_asseturi + "/evercookie.jnlp", 
         	width: "1px", 
         	height: "1px", 
         	placeholder: "ecAppletContainer"
@@ -523,7 +523,7 @@ try{
       params.swliveconnect = "true";
       attributes.id        = "myswf";
       attributes.name      = "myswf";
-      swfobject.embedSWF(_ec_asseturi + "evercookie.swf", "swfcontainer", "1", "1", "9.0.0", false, flashvars, params, attributes);
+      swfobject.embedSWF(_ec_asseturi + "/evercookie.swf", "swfcontainer", "1", "1", "9.0.0", false, flashvars, params, attributes);
     };
 
     this.evercookie_png = function (name, value) {
@@ -732,7 +732,7 @@ try{
        * Ok. so, I tried doing this the proper dom way, but IE chokes on appending anything in object tags (including params), so this
        * is the best method I found. Someone really needs to find a less hack-ish way. I hate the look of this shit.
        */
-      var source = _ec_asseturi + "evercookie.xap",
+      var source = _ec_asseturi + "/evercookie.xap",
         minver = "4.0.50401.0",
         initParam = "",
         html;
