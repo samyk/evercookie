@@ -152,7 +152,7 @@ try{
     domain: '.' + window.location.host.replace(/:\d+/, ''), // Get current domain
     baseurl: '', // base url for php, flash and silverlight assets
     asseturi: '/assets', // assets = .fla, .jar, etc
-    phpuri: '/php', // assets = .fla, .jar, etc
+    phpuri: '/php', // php file path or route
     authPath: '/evercookie_auth.php', // set to false to disable Basic Authentication cache
     pngCookieName: 'evercookie_png',
     pngPath: '/evercookie_png.php',
