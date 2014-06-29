@@ -168,9 +168,12 @@ try{
    * @param {Object} options
    * @param {Boolean} options.history CSS history knocking or not .. can be network intensive
    * @param {Boolean} options.java Java applet on/off... may prompt users for permission to run.
-   * @param {Boolean} options.silverlight you might want to turn it off https://github.com/samyk/evercookie/issues/45
    * @param {Number} options.tests
-   * @param {String} options.baseurl base url for php, flash and silverlight assets
+   * @param {Boolean} options.silverlight you might want to turn it off https://github.com/samyk/evercookie/issues/45
+   * @param {String} options.domain (eg: www.sitename.com use .sitename.com)
+   * @param {String} options.baseurl base url (eg: www.sitename.com/demo use /demo)
+   * @param {String} options.asseturi asset path (eg: www.sitename.com/assets use /assets)
+   * @param {String} options.phpuri php path/route (eg: www.sitename.com/php use /php)
    * @param {String|Function} options.domain as a string, domain for cookie, as a function, accept window object and return domain string
    * @param {String} options.pngCookieName
    * @param {String} options.pngPath
