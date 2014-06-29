@@ -204,7 +204,11 @@ function getC(dont)
     &lt;script type="text/javascript" src="evercookie.js"&gt;&lt;/script&gt;
 
     &lt;script&gt;
-    var ec = new evercookie();</b>
+    var ec = new evercookie({
+    	baseurl: '/test', </b><i>http://localhost/test</i><b>
+    	asseturi: '/assets', </b><i>http://localhost/test/assets</i><b>
+    	phpuri: '/php' </b><i>http://localhost/test/php</i><b>
+    });</b>
     
     // set a cookie "id" to "12345"
     // usage: ec.set(key, value)
@@ -252,7 +256,6 @@ function getC(dont)
 <H2>evercookie, by <a href="mailto:code@samy.pl">Samy Kamkar</a>, 09/20/2010</h2>
 </div>
 </div></div>
-<!--
 <script type="text/javascript">
 var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
 document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
@@ -262,6 +265,5 @@ try {
 var pageTracker = _gat._getTracker("UA-6127617-2");
 pageTracker._trackPageview();
 } catch(err) {}</script>
--->
 </body>
 </html>
