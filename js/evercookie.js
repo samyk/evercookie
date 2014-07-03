@@ -147,10 +147,12 @@ try{
   var defaultOptionMap = {
     history: true, // CSS history knocking or not .. can be network intensive
     java: true, // Java applet on/off... may prompt users for permission to run.
-    tests: 10,  //1000 what is it, actually?
-    baseurl: '', // base url for php, flash and silverlight assets
+    tests: 10,  // 1000 what is it, actually?
     silverlight: true, // you might want to turn it off https://github.com/samyk/evercookie/issues/45
     domain: '.' + window.location.host.replace(/:\d+/, ''), // Get current domain
+    baseurl: '', // base url for php, flash and silverlight assets
+    asseturi: '/assets', // assets = .fla, .jar, etc
+    phpuri: '/php', // php file path or route
     authPath: '/evercookie_auth.php', // set to false to disable Basic Authentication cache
     pngCookieName: 'evercookie_png',
     pngPath: '/evercookie_png.php',
@@ -159,15 +161,19 @@ try{
     cacheCookieName: 'evercookie_cache',
     cachePath: '/evercookie_cache.php'
   };
+  
   var _baseKeyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
   /**
    * @class Evercookie
    * @param {Object} options
    * @param {Boolean} options.history CSS history knocking or not .. can be network intensive
    * @param {Boolean} options.java Java applet on/off... may prompt users for permission to run.
-   * @param {Boolean} options.silverlight you might want to turn it off https://github.com/samyk/evercookie/issues/45
    * @param {Number} options.tests
-   * @param {String} options.baseurl base url for php, flash and silverlight assets
+   * @param {Boolean} options.silverlight you might want to turn it off https://github.com/samyk/evercookie/issues/45
+   * @param {String} options.domain (eg: www.sitename.com use .sitename.com)
+   * @param {String} options.baseurl base url (eg: www.sitename.com/demo use /demo)
+   * @param {String} options.asseturi asset path (eg: www.sitename.com/assets use /assets)
+   * @param {String} options.phpuri php path/route (eg: www.sitename.com/php use /php)
    * @param {String|Function} options.domain as a string, domain for cookie, as a function, accept window object and return domain string
    * @param {String} options.pngCookieName
    * @param {String} options.pngPath
@@ -194,6 +200,8 @@ try{
       _ec_java =  opts.java,
       _ec_tests = opts.tests,
       _ec_baseurl = opts.baseurl,
+      _ec_asseturi = opts.asseturi,
+      _ec_phpuri = opts.phpuri,
       _ec_domain = opts.domain;
 
     // private property
@@ -388,7 +396,7 @@ try{
         document.cookie = opts.cacheCookieName + "=" + value + "; path=/; domain=" + _ec_domain;
         // {{ajax request to opts.cachePath}} handles caching
         self.ajax({
-          url: _ec_baseurl + opts.cachePath + "?name=" + name,
+          url: _ec_baseurl + _ec_phpuri + opts.cachePath + "?name=" + name,
           success: function (data) {}
         });
       } else {
@@ -399,7 +407,7 @@ try{
         document.cookie = opts.cacheCookieName + "=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/; domain=" + _ec_domain;
 
         self.ajax({
-          url: _ec_baseurl + opts.cachePath + "?name=" + name,
+          url: _ec_baseurl + _ec_phpuri + opts.cachePath + "?name=" + name,
           success: function (data) {
             // put our cookie back
             document.cookie = opts.cacheCookieName + "=" + origvalue + "; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/; domain=" + _ec_domain;
@@ -412,11 +420,11 @@ try{
     this.evercookie_auth = function (name, value) {
       if (value !== undefined) {
         // {{opts.authPath}} handles Basic Access Authentication
-        newImage('//' + value + '@' + location.host + _ec_baseurl + opts.authPath + "?name=" + name);
+        newImage('//' + value + '@' + location.host + _ec_baseurl + _ec_phpuri + opts.authPath + "?name=" + name);
       }
       else {
         self.ajax({
-          url: _ec_baseurl + opts.authPath + "?name=" + name,
+          url: _ec_baseurl + _ec_phpuri + opts.authPath + "?name=" + name,
           success: function (data) {
             self._ec.authData = data;
           }
@@ -430,7 +438,7 @@ try{
         document.cookie = opts.etagCookieName + "=" + value + "; path=/; domain=" + _ec_domain;
         // {{ajax request to opts.etagPath}} handles etagging
         self.ajax({
-          url: _ec_baseurl + opts.etagPath + "?name=" + name,
+          url: _ec_baseurl + _ec_phpuri + opts.etagPath + "?name=" + name,
           success: function (data) {}
         });
       } else {
@@ -441,7 +449,7 @@ try{
         document.cookie = opts.etagCookieName + "=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/; domain=" + _ec_domain;
 
         self.ajax({
-          url: _ec_baseurl + opts.etagPath + "?name=" + name,
+          url: _ec_baseurl + _ec_phpuri + opts.etagPath + "?name=" + name,
           success: function (data) {
             // put our cookie back
             document.cookie = opts.etagCookieName + "=" + origvalue + "; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/; domain=" + _ec_domain;
@@ -476,7 +484,7 @@ try{
       if (typeof ecApplet === "undefined") {
         dtjava.embed({ 
         	id: "ecApplet",
-        	url: _ec_baseurl + "evercookie.jnlp", 
+        	url: _ec_baseurl + _ec_asseturi + "/evercookie.jnlp", 
         	width: "1px", 
         	height: "1px", 
         	placeholder: "ecAppletContainer"
@@ -518,7 +526,7 @@ try{
       params.swliveconnect = "true";
       attributes.id        = "myswf";
       attributes.name      = "myswf";
-      swfobject.embedSWF(_ec_baseurl + "evercookie.swf", "swfcontainer", "1", "1", "9.0.0", false, flashvars, params, attributes);
+      swfobject.embedSWF(_ec_baseurl + _ec_asseturi + "/evercookie.swf", "swfcontainer", "1", "1", "9.0.0", false, flashvars, params, attributes);
     };
 
     this.evercookie_png = function (name, value) {
@@ -574,7 +582,7 @@ try{
             }
           };
         }
-        img.src = _ec_baseurl + opts.pngPath + "?name=" + name;
+        img.src = _ec_baseurl + _ec_phpuri + opts.pngPath + "?name=" + name;
       }
     };
 
@@ -727,7 +735,7 @@ try{
        * Ok. so, I tried doing this the proper dom way, but IE chokes on appending anything in object tags (including params), so this
        * is the best method I found. Someone really needs to find a less hack-ish way. I hate the look of this shit.
        */
-      var source = _ec_baseurl + "evercookie.xap",
+      var source = _ec_baseurl + _ec_asseturi + "/evercookie.xap",
         minver = "4.0.50401.0",
         initParam = "",
         html;
