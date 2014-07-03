@@ -20,5 +20,3 @@ header('Expires: Tue, 31 Dec 2030 23:30:45 GMT');
 header('Cache-Control: private, max-age=630720000');
 
 echo $_COOKIE["evercookie_cache"];
-
-?>

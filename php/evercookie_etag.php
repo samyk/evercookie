@@ -41,10 +41,12 @@ if (!isset($_COOKIE['evercookie_etag']) || empty($_COOKIE['evercookie_etag'])) {
     }
 
     $headers = apache_request_headers();
-    echo $headers['If-None-Match'];
+    if(isset($headers['If-None-Match'])) {
+		echo $headers['If-None-Match'];
+	}
 
-    header('Etag: $headers["If-None-Match"]')
-		exit;
+    header('Etag: '.$headers["If-None-Match"]);
+	exit;
 }
 
 // set our etag
