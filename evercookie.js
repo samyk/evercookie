@@ -151,7 +151,7 @@ try{
     baseurl: '', // base url for php, flash and silverlight assets
     silverlight: true, // you might want to turn it off https://github.com/samyk/evercookie/issues/45
     domain: '.' + window.location.host.replace(/:\d+/, ''), // Get current domain
-    authPath: '/evercookie_auth.php', // set to false to disable Basic Authentication cache
+    authPath: false,//'/evercookie_auth.php', // set to false to disable Basic Authentication cache
     pngCookieName: 'evercookie_png',
     pngPath: '/evercookie_png.php',
     etagCookieName: 'evercookie_etag',
