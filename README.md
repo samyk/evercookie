@@ -50,8 +50,9 @@ The Java persistence mechanisms are developed and maintained by [Gabriel Bauman]
 
 Backend Server
 --------------
-Some of the storage mechanisms require a backend server. This package comes with PHP implementation of the etag, cache and png backend servers. For a Node.js version, please visit [node-evercookie](https://github.com/truongsinh/node-evercookie).
-If you port a backend server to another languages, please open a pull request!
+Some of the storage mechanisms require a backend server. This package comes with PHP implementation of the etag, cache and png backend servers.
+- For Node.js version, please visit [node-evercookie](https://github.com/truongsinh/node-evercookie).
+- For Django version, please visit [Django Evercookie](https://github.com/gdmka/django_evercookie)
 
 Caveats
 -------
