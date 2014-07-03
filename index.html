@@ -1,9 +1,9 @@
 <html>
 <head>
-<link rel="stylesheet" href="master.css" type="text/css">
-<script type="text/javascript" src="swfobject-2.2.min.js"></script>
+<link rel="stylesheet" href="css/master.css" type="text/css">
+<script type="text/javascript" src="js/swfobject-2.2.min.js"></script>
 <script type="text/javascript" src="http://www.java.com/js/dtjava.js"></script>
-<script type="text/javascript" src="evercookie.js"></script>
+<script type="text/javascript" src="js/evercookie.js"></script>
 <title>evercookie - virtually irrevocable persistent cookies</title>
 </head>
 <body>
@@ -61,7 +61,9 @@
 <H2>EXAMPLE</H2><PRE>
 <script>
 var val = '' + Math.floor(Math.random()*1000);
-var ec = new evercookie();
+var ec = new evercookie({
+	/* Options */
+});
 
 getC(0);
 //setTimeout(getC, 500, 1);
@@ -202,7 +204,11 @@ function getC(dont)
     &lt;script type="text/javascript" src="evercookie.js"&gt;&lt;/script&gt;
 
     &lt;script&gt;
-    var ec = new evercookie();</b>
+    var ec = new evercookie({
+    	baseurl: '/test', </b><i>http://localhost/test</i><b>
+    	asseturi: '/assets', </b><i>http://localhost/test/assets</i><b>
+    	phpuri: '/php' </b><i>http://localhost/test/php</i><b>
+    });</b>
     
     // set a cookie "id" to "12345"
     // usage: ec.set(key, value)
@@ -259,6 +265,5 @@ try {
 var pageTracker = _gat._getTracker("UA-6127617-2");
 pageTracker._trackPageview();
 } catch(err) {}</script>
-
 </body>
 </html>
