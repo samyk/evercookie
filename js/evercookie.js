@@ -758,7 +758,11 @@ try{
         '</a>' +
       '</object>';
       try{
-      document.body.appendChild(html);
+        if (typeof jQuery === 'undefined') {
+          document.body.appendChild(html);
+        } else {
+          $('body').append(html);
+        }
       }catch(ex){
       	
       }
