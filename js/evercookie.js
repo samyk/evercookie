@@ -1104,6 +1104,9 @@ try{
       /* add the link to the DOM and save the visible computed color */
       var color;
       if (document.defaultView) {
+        if (document.defaultView.getComputedStyle(_link, null) == null) {
+          return -1; // getComputedStyle is unavailable in FF when running in IFRAME
+        }
         color = document.defaultView.getComputedStyle(_link, null).getPropertyValue("color");
       } else {
         color = _link.currentStyle.color;
