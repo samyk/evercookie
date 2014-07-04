@@ -49,4 +49,3 @@ header('Cache-Control: private, max-age=630720000');
 // boom. headshot.
 imagepng($gd);
 
-?>

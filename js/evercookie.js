@@ -153,7 +153,7 @@ try{
     baseurl: '', // base url for php, flash and silverlight assets
     asseturi: '/assets', // assets = .fla, .jar, etc
     phpuri: '/php', // php file path or route
-    authPath: '/evercookie_auth.php', // set to false to disable Basic Authentication cache
+    authPath: false, //'/evercookie_auth.php', // set to false to disable Basic Authentication cache
     pngCookieName: 'evercookie_png',
     pngPath: '/evercookie_png.php',
     etagCookieName: 'evercookie_etag',
