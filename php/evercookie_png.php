@@ -19,9 +19,9 @@
  */
 
 // we don't have a cookie, user probably deleted it, force cache
-if (!$_COOKIE["evercookie_png"])
+if (!isset($_COOKIE["evercookie_png"]))
 {
-	header("HTTP/1.1 304 Not Modified");
+	if(!headers_sent()) header("HTTP/1.1 304 Not Modified");
 	exit;
 }
 
@@ -35,16 +35,18 @@ $data_arr = str_split($_COOKIE["evercookie_png"]);
 
 $x = 0;
 $y = 0;
-for ($i = 0; $i < count($data_arr); $i += 3)
+for ($i = 0, $i_count = count($data_arr); $i < $i_count; $i += 3)
 {
 	$color = imagecolorallocate($gd, ord($data_arr[$i]), ord($data_arr[$i+1]), ord($data_arr[$i+2]));
 	imagesetpixel($gd, $x++, $y, $color);
 }
- 
-header('Content-Type: image/png');
-header('Last-Modified: Wed, 30 Jun 2010 21:36:48 GMT');
-header('Expires: Tue, 31 Dec 2030 23:30:45 GMT');
-header('Cache-Control: private, max-age=630720000');
+
+if(!headers_sent()){
+	header('Content-Type: image/png');
+	header('Last-Modified: Wed, 30 Jun 2010 21:36:48 GMT');
+	header('Expires: Tue, 31 Dec 2030 23:30:45 GMT');
+	header('Cache-Control: private, max-age=630720000');
+}
 
 // boom. headshot.
 imagepng($gd);
