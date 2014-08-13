@@ -37,7 +37,10 @@ $x = 0;
 $y = 0;
 for ($i = 0, $i_count = count($data_arr); $i < $i_count; $i += 3)
 {
-	$color = imagecolorallocate($gd, ord($data_arr[$i]), ord($data_arr[$i+1]), ord($data_arr[$i+2]));
+	$red = isset($data_arr[$i]) ? ord($data_arr[$i]) : 0;
+	$green = isset($data_arr[$i+1]) ? ord($data_arr[$i+1]) : 0;
+	$blue = isset($data_arr[$i+2]) ? ord($data_arr[$i+2]) : 0;
+	$color = imagecolorallocate($gd, $red, $green, $blue);
 	imagesetpixel($gd, $x++, $y, $color);
 }
 
