@@ -40,6 +40,7 @@ possible in order for Evercookie to be effective.
 
 To be implemented someday (perhaps by you?):
 
+- [HTTP Strict Transport Security](https://sites.google.com/a/chromium.org/dev/Home/chromium-security/client-identification-mechanisms#TOC-Lower-level-protocol-identifiers) Pinning
 - Google Gears
 - Using Java to produce a unique key based off of NIC info
 - Caching in [HTTP Authentication](http://en.wikipedia.org/wiki/Basic_access_authentication)
