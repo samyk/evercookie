@@ -10,12 +10,10 @@
  */
 
 // we don't have a cookie, so we're not setting it
-if (!isset($_COOKIE['evercookie_etag']) || empty($_COOKIE['evercookie_etag'])) {
+if (empty($_COOKIE['evercookie_etag'])) {
     // read our etag and pass back
     if (!function_exists('apache_request_headers')) {
-
-        function apache_request_headers()
-        {
+        function apache_request_headers() {
             // Source: http://www.php.net/manual/en/function.apache-request-headers.php#70810
             $arh = array();
             $rx_http = '/\AHTTP_/';
@@ -35,18 +33,16 @@ if (!isset($_COOKIE['evercookie_etag']) || empty($_COOKIE['evercookie_etag'])) {
                     $arh[$arh_key] = $val;
                 }
             }
-
             return ($arh);
         }
     }
 
     $headers = apache_request_headers();
     if(isset($headers['If-None-Match'])) {
-		echo $headers['If-None-Match'];
-	}
-
-    header('Etag: '.$headers["If-None-Match"]);
-	exit;
+        header('Etag: ' . $headers['If-None-Match']);
+        echo $headers['If-None-Match'];
+    }
+    exit;
 }
 
 // set our etag
