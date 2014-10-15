@@ -8,10 +8,9 @@
  */
 
 // we don't have a cookie, user probably deleted it, force cache
-if (!$_COOKIE["evercookie_cache"])
-{
-	header("HTTP/1.1 304 Not Modified");
-	exit;
+if (empty($_COOKIE['evercookie_cache'])) {
+    header('HTTP/1.1 304 Not Modified');
+    exit;
 }
 
 header('Content-Type: text/html');
@@ -19,4 +18,4 @@ header('Last-Modified: Wed, 30 Jun 2010 21:36:48 GMT');
 header('Expires: Tue, 31 Dec 2030 23:30:45 GMT');
 header('Cache-Control: private, max-age=630720000');
 
-echo $_COOKIE["evercookie_cache"];
+echo $_COOKIE['evercookie_cache'];
