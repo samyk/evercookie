@@ -18,8 +18,12 @@
  * -samy kamkar
  */
 
+// we get cookie name from current file name so remember about it when rename of this file will be required
+include dirname(__FILE__) . DIRECTORY_SEPARATOR . '_cookie_name.php';
+$cookie_name = evercookie_get_cookie_name(__FILE__);
+
 // we don't have a cookie, user probably deleted it, force cache
-if (empty($_COOKIE['evercookie_png'])) {
+if (empty($_COOKIE[$cookie_name])) {
     if(!headers_sent()) {
         header('HTTP/1.1 304 Not Modified');
     }
@@ -32,7 +36,7 @@ $y = 1;
 
 $gd = imagecreatetruecolor($x, $y);
 
-$data_arr = str_split($_COOKIE['evercookie_png']);
+$data_arr = str_split($_COOKIE[$cookie_name]);
 
 $x = 0;
 $y = 0;
