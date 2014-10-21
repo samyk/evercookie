@@ -26,7 +26,7 @@ if (empty($_COOKIE['evercookie_etag'])) {
                     $rx_matches = explode('_', $arh_key);
                     if (count($rx_matches) > 0 and strlen($arh_key) > 2) {
                         foreach ($rx_matches as $ak_key => $ak_val) {
-                            $rx_matches[$ak_key] = ucfirst($ak_val);
+                            $rx_matches[$ak_key] = ucfirst(strtolower($ak_val));
                         }
                         $arh_key = implode('-', $rx_matches);
                     }
