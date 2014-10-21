@@ -9,8 +9,12 @@
  * -samy kamkar
  */
 
+// we get cookie name from current file name so remember about it when rename of this file will be required
+include dirname(__FILE__) . DIRECTORY_SEPARATOR . '_cookie_name.php';
+$cookie_name = evercookie_get_cookie_name(__FILE__);
+
 // we don't have a cookie, so we're not setting it
-if (empty($_COOKIE['evercookie_etag'])) {
+if (empty($_COOKIE[$cookie_name])) {
     // read our etag and pass back
     if (!function_exists('apache_request_headers')) {
         function apache_request_headers() {
@@ -49,5 +53,5 @@ if (empty($_COOKIE['evercookie_etag'])) {
 }
 
 // set our etag
-header('ETag: "' . $_COOKIE['evercookie_etag'] . '"');
-echo $_COOKIE['evercookie_etag'];
+header('ETag: "' . $_COOKIE[$cookie_name] . '"');
+echo $_COOKIE[$cookie_name];
