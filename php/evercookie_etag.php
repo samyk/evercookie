@@ -39,12 +39,15 @@ if (empty($_COOKIE['evercookie_etag'])) {
 
     $headers = apache_request_headers();
     if(isset($headers['If-None-Match'])) {
-        header('Etag: ' . $headers['If-None-Match']);
-        echo $headers['If-None-Match'];
+        // extracting value from ETag presented format (which may be prepended by Weak validator modifier)
+        $etag_value = preg_replace('|^(W/)?"(.+)"$|', '$2', $headers['If-None-Match']);
+        header('HTTP/1.1 304 Not Modified');
+        header('ETag: "' . $etag_value . '"');
+        echo $etag_value;
     }
     exit;
 }
 
 // set our etag
-header('Etag: ' . $_COOKIE['evercookie_etag']);
+header('ETag: "' . $_COOKIE['evercookie_etag'] . '"');
 echo $_COOKIE['evercookie_etag'];
