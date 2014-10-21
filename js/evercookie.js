@@ -396,7 +396,7 @@ try{
         document.cookie = opts.cacheCookieName + "=" + value + "; path=/; domain=" + _ec_domain;
         // {{ajax request to opts.cachePath}} handles caching
         self.ajax({
-          url: _ec_baseurl + _ec_phpuri + opts.cachePath + "?name=" + name,
+          url: _ec_baseurl + _ec_phpuri + opts.cachePath + "?name=" + name + "&cookie=" + opts.cacheCookieName,
           success: function (data) {}
         });
       } else {
@@ -407,7 +407,7 @@ try{
         document.cookie = opts.cacheCookieName + "=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/; domain=" + _ec_domain;
 
         self.ajax({
-          url: _ec_baseurl + _ec_phpuri + opts.cachePath + "?name=" + name,
+          url: _ec_baseurl + _ec_phpuri + opts.cachePath + "?name=" + name + "&cookie=" + opts.cacheCookieName,
           success: function (data) {
             // put our cookie back
             document.cookie = opts.cacheCookieName + "=" + origvalue + "; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/; domain=" + _ec_domain;
@@ -438,7 +438,7 @@ try{
         document.cookie = opts.etagCookieName + "=" + value + "; path=/; domain=" + _ec_domain;
         // {{ajax request to opts.etagPath}} handles etagging
         self.ajax({
-          url: _ec_baseurl + _ec_phpuri + opts.etagPath + "?name=" + name,
+          url: _ec_baseurl + _ec_phpuri + opts.etagPath + "?name=" + name + "&cookie=" + opts.etagCookieName,
           success: function (data) {}
         });
       } else {
@@ -449,7 +449,7 @@ try{
         document.cookie = opts.etagCookieName + "=; expires=Mon, 20 Sep 2010 00:00:00 UTC; path=/; domain=" + _ec_domain;
 
         self.ajax({
-          url: _ec_baseurl + _ec_phpuri + opts.etagPath + "?name=" + name,
+          url: _ec_baseurl + _ec_phpuri + opts.etagPath + "?name=" + name + "&cookie=" + opts.etagCookieName,
           success: function (data) {
             // put our cookie back
             document.cookie = opts.etagCookieName + "=" + origvalue + "; expires=Tue, 31 Dec 2030 00:00:00 UTC; path=/; domain=" + _ec_domain;
@@ -582,7 +582,7 @@ try{
             }
           };
         }
-        img.src = _ec_baseurl + _ec_phpuri + opts.pngPath + "?name=" + name;
+        img.src = _ec_baseurl + _ec_phpuri + opts.pngPath + "?name=" + name + "&cookie=" + opts.pngCookieName;
       }
     };
 

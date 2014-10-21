@@ -7,5 +7,8 @@
  * @return string evercookie_blabla
  */
 function evercookie_get_cookie_name($file_name) {
+    if (!empty($_GET['cookie'])) {
+        return $_GET['cookie'];
+    }
     return basename($file_name, '.php');
 }
