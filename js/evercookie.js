@@ -343,14 +343,16 @@ try{
     this.evercookie_userdata = function (name, value) {
       try {
         var elm = this.createElem("div", "userdata_el", 1);
-        elm.style.behavior = "url(#default#userData)";
+        if (elm.addBehavior) {
+          elm.style.behavior = "url(#default#userData)";
 
-        if (value !== undefined) {
-          elm.setAttribute(name, value);
-          elm.save(name);
-        } else {
-          elm.load(name);
-          return elm.getAttribute(name);
+          if (value !== undefined) {
+            elm.setAttribute(name, value);
+            elm.save(name);
+          } else {
+            elm.load(name);
+            return elm.getAttribute(name);
+          }
         }
       } catch (e) {}
     };
