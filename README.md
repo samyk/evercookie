@@ -10,7 +10,7 @@ mechanisms as possible. If cookie data is removed from any of the storage
 mechanisms, evercookie aggressively re-creates it in each mechanism as long as
 one is still intact.
 
-If the LSO mechanism is available, Evercookie may even propagate cookies
+If the Flash LSO, Silverlight or Java mechanism is available, Evercookie can even propagate cookies
 between different browsers on the same client machine!
 
 By [Samy Kamkar](http://samy.pl), with awesome [contributions from others](https://github.com/samyk/evercookie/graphs/contributors)
