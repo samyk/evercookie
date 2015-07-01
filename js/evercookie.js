@@ -159,7 +159,8 @@ try{
     etagCookieName: 'evercookie_etag',
     etagPath: '/evercookie_etag.php',
     cacheCookieName: 'evercookie_cache',
-    cachePath: '/evercookie_cache.php'
+    cachePath: '/evercookie_cache.php',
+    clientOnly: false // set to true to disable calls to hosted services
   };
   
   var _baseKeyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
@@ -181,6 +182,7 @@ try{
    * @param {String} options.etagPath
    * @param {String} options.cacheCookieName
    * @param {String} options.cachePath
+   * @param {Boolean} options.clientOnly when true then skip all storage's required network interactions with hosted services
    */
   function Evercookie(options) {
     options = options || {};
@@ -227,15 +229,17 @@ try{
       if (i === 0) {
         self.evercookie_database_storage(name, value);
         self.evercookie_indexdb_storage(name, value);
-        self.evercookie_png(name, value);
-        self.evercookie_etag(name, value);
-        self.evercookie_cache(name, value);
+        if(!opts.clientOnly){
+          self.evercookie_png(name, value);
+          self.evercookie_etag(name, value);
+          if (opts.authPath) {
+            self.evercookie_auth(name, value);
+          }
+          self.evercookie_cache(name, value);
+        }
         self.evercookie_lso(name, value);
         if (opts.silverlight) {
           self.evercookie_silverlight(name, value);
-        }
-        if (opts.authPath) {
-          self.evercookie_auth(name, value);
         }
         if (_ec_java) {
           self.evercookie_java(name, value);
