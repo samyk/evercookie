@@ -144,6 +144,95 @@ try{
     _global_isolated = "";
   }
 
+  
+  // hsts-cookie "lib"
+  function HSTS_Cookie(domains){
+        var fields = [];
+        var remaining = 0;
+        var working = false;
+
+        function create_request(i, src, callback){
+            var img = document.createElement('img');
+            img.src = src + '#' + parseInt(Math.random()*32000); // prevent caching
+            img.onload = function(){
+                fields[i] = true;
+                remaining -= 1;
+                if(remaining <= 0){
+                    working = false;
+                    callback(fields);
+                }
+            };
+            img.onerror = function(){
+                fields[i] = false;
+                remaining -= 1;
+                if(remaining <= 0){
+                    working = false;
+                    callback(fields);
+                }
+            };
+            return img;
+        }
+        function pad(value, length) {
+            return (value.toString().length < length) ? pad("0"+value, length):value;
+        }
+        function bools_to_int(bools){
+            var n = 0, l = bools.length;
+            for (var i = 0; i < l; ++i) {
+                n = (n << 1) + (bools[i] ? 1 : 0);
+            }
+            return n;
+        }
+        function int_to_bools(value, bit_count){
+            var bools = [];
+            var bits = parseInt(value, 10).toString(2);
+            bits = pad(bits, 32);
+            for(var i=32-bit_count; i < 32; ++i){
+                bools.push(bits[i]=='1' ? true : false);
+            }
+            return bools;
+        }
+        return {
+            'bools_to_int': bools_to_int,
+            'is_working': function(){ return working },
+            'get_hsts_value': function (callback){
+                if(working) return false;
+                working = true;
+                fields = [];
+                remaining = domains.length;
+                for(var i = 0; i < domains.length; ++i){
+                    fields.push(undefined);
+                    var img = create_request(i, domains[i], callback);
+                }
+                return true;
+            },
+            'set_hsts_value': function (values, callback){
+                if(working) return false;
+                working = true;
+                fields = [];
+                remaining = domains.length;
+                for(var i = 0; i < domains.length; ++i){
+                    fields.push(undefined);
+                    if(values[i])
+                        create_request(i, domains[i]+'?SET=1', callback);
+                    else
+                        create_request(i, domains[i]+'?DEL=1', callback);
+                }
+                return true;
+            },
+            'set_hsts_as_int': function (value, callback){
+                var value = int_to_bools(value, domains.length);
+                return this.set_hsts_value(value, callback);
+            },            
+            'get_hsts_as_int': function (callback){
+                return this.get_hsts_value(function(fields){
+                    callback(bools_to_int(fields));
+                });
+            }
+        };
+    }
+  
+  
+  
   var defaultOptionMap = {
     history: true, // CSS history knocking or not .. can be network intensive
     java: true, // Java applet on/off... may prompt users for permission to run.
@@ -159,7 +248,9 @@ try{
     etagCookieName: 'evercookie_etag',
     etagPath: '/evercookie_etag.php',
     cacheCookieName: 'evercookie_cache',
-    cachePath: '/evercookie_cache.php'
+    cachePath: '/evercookie_cache.php',
+	hsts: false,
+	hsts_domains: []
   };
   
   var _baseKeyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
@@ -181,6 +272,8 @@ try{
    * @param {String} options.etagPath
    * @param {String} options.cacheCookieName
    * @param {String} options.cachePath
+   * @param {String} options.hsts	Turn hsts cookies on and off.
+   * @param {Array} options.hsts_domains	The domains used for the hsts cookie. 1 Domain = one bit (8 domains => 8 bit => values up to 255)
    */
   function Evercookie(options) {
     options = options || {};
@@ -202,11 +295,19 @@ try{
       _ec_baseurl = opts.baseurl,
       _ec_asseturi = opts.asseturi,
       _ec_phpuri = opts.phpuri,
-      _ec_domain = opts.domain;
+      _ec_domain = opts.domain,
+	  _ec_hsts = opts.hsts;
 
     // private property
     var self = this;
     this._ec = {};
+    if (_ec_hsts){
+        if(opts.hsts_domains.length <= 8){
+            // TODO: warn on some more prominent place ?
+            console.log('HSTS cookie with '+opts.hsts_domains.length+' can only save values up to ' + Math.pow(2, opts.hsts_domains.length) - 1);
+        }
+        this.hsts_cookie = HSTS_Cookie(opts.hsts_domains);
+    }
 
     this.get = function (name, cb, dont_reset) {
       self._evercookie(name, cb, undefined, undefined, dont_reset);
@@ -224,7 +325,7 @@ try{
         i = 0;
       }
       // first run
-      if (i === 0) {
+      if (i === 0) {      
         self.evercookie_database_storage(name, value);
         self.evercookie_indexdb_storage(name, value);
         self.evercookie_png(name, value);
@@ -247,16 +348,30 @@ try{
         self._ec.globalData    = self.evercookie_global_storage(name, value);
         self._ec.sessionData   = self.evercookie_session_storage(name, value);
         self._ec.windowData    = self.evercookie_window(name, value);
-
+        
         if (_ec_history) {
           self._ec.historyData = self.evercookie_history(name, value);
+        }
+        if (_ec_hsts) {
+            self._ec.hstsData = undefined;
+            if( value === undefined ){
+                self.hsts_cookie.get_hsts_as_int(function(int_val){
+                    self._ec.hstsData = int_val;
+                });
+            }else{
+                self.hsts_cookie.set_hsts_as_int(value, function(val){
+                    self._ec.hstsData = self.hsts_cookie.bools_to_int(val);
+                });
+            }
         }
       }
 
       // when writing data, we need to make sure lso and silverlight object is there
       if (value !== undefined) {
         if ((typeof _global_lso === "undefined" ||
-          typeof _global_isolated === "undefined") &&
+          typeof _global_isolated === "undefined" ||
+          self._ec.hstsData === undefined ||
+          self.hsts_cookie.is_working()) &&
           i++ < _ec_tests) {
           setTimeout(function () {
             self._evercookie(name, cb, value, i, dont_reset);
@@ -276,6 +391,7 @@ try{
             (typeof self._ec.etagData === "undefined") ||
             (typeof self._ec.cacheData === "undefined") ||
             (typeof self._ec.javaData === "undefined") ||
+            (self._ec.hstsData === undefined || self.hsts_cookie.is_working()) || 
             (document.createElement("canvas").getContext && (typeof self._ec.pngData === "undefined" || self._ec.pngData === "")) ||
             (typeof _global_isolated === "undefined")
           ) &&
@@ -319,6 +435,7 @@ try{
             }
           }
 
+          this.working = false;
           // reset cookie everywhere
           if (candidate !== undefined && (dont_reset === undefined || dont_reset !== 1)) {
             self.set(name, candidate);
@@ -1143,6 +1260,6 @@ try{
    * Keep first letter in small for legacy purpose
    * @expose Evercookie
    */
-  window.evercookie = window.Evercookie = Evercookie;
+  window.evercookie = window.Evercookie = Evercookie; 
 }(window));
 }catch(ex){}
