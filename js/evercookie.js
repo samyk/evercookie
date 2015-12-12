@@ -1004,7 +1004,7 @@ try{
       // - is special
       var baseElems = (_baseKeyStr + "-").split(""),
         // sorry google.
-        url = "http://www.google.com/evercookie/cache/" + this.getHost() + "/" + name,
+        url = "https://www.google.com/evercookie/cache/" + this.getHost() + "/" + name,
         i, base,
         letter = "",
         val = "",
