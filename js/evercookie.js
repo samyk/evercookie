@@ -703,6 +703,7 @@ try{
           };
         }
         img.src = _ec_baseurl + _ec_phpuri + opts.pngPath + "?name=" + name + "&cookie=" + opts.pngCookieName;
+        img.crossOrigin = 'Anonymous';
       }
     };
 
