@@ -646,6 +646,7 @@ try{
       params.swliveconnect = "true";
       attributes.id        = "myswf";
       attributes.name      = "myswf";
+      attributes.style     = "display: none;"; // try hard not to mess up layout at bottom of page
       swfobject.embedSWF(_ec_baseurl + _ec_asseturi + "/evercookie.swf", "swfcontainer", "1", "1", "9.0.0", false, flashvars, params, attributes);
     };
 
