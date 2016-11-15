@@ -41,8 +41,10 @@ if (empty($_COOKIE[$cookie_name])) {
         }
     }
 
-    $headers = apache_request_headers();
-    if(isset($headers['If-None-Match'])) {
+    // Headers might have different letter case depending on the web server.
+    // So, change all headers to uppercase and compare it.
+    $headers = array_change_key_case(apache_request_headers(), CASE_UPPER);
+    if(isset($headers['IF-NONE-MATCH'])) {
         // extracting value from ETag presented format (which may be prepended by Weak validator modifier)
         $etag_value = preg_replace('|^(W/)?"(.+)"$|', '$2', $headers['If-None-Match']);
         header('HTTP/1.1 304 Not Modified');
