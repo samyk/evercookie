@@ -237,7 +237,8 @@ try{
     history: true, // CSS history knocking or not .. can be network intensive
     java: true, // Java applet on/off... may prompt users for permission to run.
     tests: 10,  // 1000 what is it, actually?
-    silverlight: true, // you might want to turn it off https://github.com/samyk/evercookie/issues/45
+    silverlight: true, // you might want to turn it off https://github.com/samyk/evercookie/issues/45,
+    lso: true, // local storage
     domain: '.' + window.location.host.replace(/:\d+/, ''), // Get current domain
     baseurl: '', // base url for php, flash and silverlight assets
     asseturi: '/assets', // assets = .fla, .jar, etc
@@ -249,10 +250,12 @@ try{
     etagPath: '/evercookie_etag.php',
     cacheCookieName: 'evercookie_cache',
     cachePath: '/evercookie_cache.php',
-	hsts: false,
-	hsts_domains: []
+    hsts: false,
+    hsts_domains: [],
+    db: true, // Database
+    idb: true // Indexed DB
   };
-  
+
   var _baseKeyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
   /**
    * @class Evercookie
@@ -261,6 +264,7 @@ try{
    * @param {Boolean} options.java Java applet on/off... may prompt users for permission to run.
    * @param {Number} options.tests
    * @param {Boolean} options.silverlight you might want to turn it off https://github.com/samyk/evercookie/issues/45
+   * @param {Boolean} options.lso 	Turn local storage cookies on and off.
    * @param {String} options.domain (eg: www.sitename.com use .sitename.com)
    * @param {String} options.baseurl base url (eg: www.sitename.com/demo use /demo)
    * @param {String} options.asseturi asset path (eg: www.sitename.com/assets use /assets)
@@ -273,6 +277,8 @@ try{
    * @param {String} options.cacheCookieName
    * @param {String} options.cachePath
    * @param {String} options.hsts	Turn hsts cookies on and off.
+   * @param {Boolean} options.db 	Turn db cookies on and off.
+   * @param {Boolean} options.idb 	Turn indexed db cookies on and off.
    * @param {Array} options.hsts_domains	The domains used for the hsts cookie. 1 Domain = one bit (8 domains => 8 bit => values up to 255)
    */
   function Evercookie(options) {
@@ -326,19 +332,31 @@ try{
       }
       // first run
       if (i === 0) {      
-        self.evercookie_database_storage(name, value);
-        self.evercookie_indexdb_storage(name, value);
-        self.evercookie_png(name, value);
-        self.evercookie_etag(name, value);
-        self.evercookie_cache(name, value);
-        self.evercookie_lso(name, value);
+        if (opts.db) {
+          self.evercookie_database_storage(name, value);
+        }
+        if (opts.idb) {
+          self.evercookie_indexdb_storage(name, value);
+        }
+        if (opts.pngCookieName) {
+          self.evercookie_png(name, value);
+        }
+        if (opts.etagCookieName) {
+          self.evercookie_etag(name, value);
+        }
+        if (opts.cacheCookieName) {
+          self.evercookie_cache(name, value);
+        }
+        if (opts.lso) {
+          self.evercookie_lso(name, value);
+        }
         if (opts.silverlight) {
           self.evercookie_silverlight(name, value);
         }
         if (opts.authPath) {
           self.evercookie_auth(name, value);
         }
-        if (_ec_java) {
+        if (opts.java && _ec_java) {
           self.evercookie_java(name, value);
         }
         
@@ -385,15 +403,15 @@ try{
         if (
           (
             // we support local db and haven't read data in yet
-            (window.openDatabase && typeof self._ec.dbData === "undefined") ||
-            (idb() && (typeof self._ec.idbData === "undefined" || self._ec.idbData === "")) ||
-            (typeof _global_lso === "undefined") ||
-            (typeof self._ec.etagData === "undefined") ||
-            (typeof self._ec.cacheData === "undefined") ||
-            (typeof self._ec.javaData === "undefined") ||
-            (self._ec.hstsData === undefined || self.hsts_cookie.is_working()) || 
-            (document.createElement("canvas").getContext && (typeof self._ec.pngData === "undefined" || self._ec.pngData === "")) ||
-            (typeof _global_isolated === "undefined")
+            (opts.db && window.openDatabase && typeof self._ec.dbData === "undefined") ||
+            (opts.idb && idb() && (typeof self._ec.idbData === "undefined" || self._ec.idbData === "")) ||
+            (opts.lso && typeof _global_lso === "undefined") ||
+            (opts.etagCookieName && typeof self._ec.etagData === "undefined") ||
+            (opts.cacheCookieName && typeof self._ec.cacheData === "undefined") ||
+            (opts.java && typeof self._ec.javaData === "undefined") ||
+            (opts.hsts && self._ec.hstsData === undefined || self.hsts_cookie.is_working()) || 
+            (opts.pngCookieName && document.createElement("canvas").getContext && (typeof self._ec.pngData === "undefined" || self._ec.pngData === "")) ||
+            (opts.silverlight && typeof _global_isolated === "undefined")
           ) &&
           i++ < _ec_tests
         )
