@@ -27,7 +27,7 @@ possible in order for Evercookie to be effective.
 - CSS [History Knocking](https://samy.pl/csshack/)
 - Storing cookies in [HTTP ETags](https://en.wikipedia.org/wiki/HTTP_ETag) ([Backend server](#backend-server) required)
 - Storing cookies in [Web cache](https://en.wikipedia.org/wiki/Web_cache) ([Backend server](#backend-server) required)
-- [HTTP Strict Transport Security (HSTS)](https://sites.google.com/a/chromium.org/dev/Home/chromium-security/client-identification-mechanisms#TOC-Lower-level-protocol-identifiers) Pinning
+- [HTTP Strict Transport Security (HSTS)](https://sites.google.com/a/chromium.org/dev/Home/chromium-security/client-identification-mechanisms#TOC-Lower-level-protocol-identifiers) Pinning (works in Incognito mode)
 - [window.name caching](https://en.wikipedia.org/wiki/HTTP_cookie#window.name)
 - Internet Explorer [userData storage](http://msdn.microsoft.com/en-us/library/ms531424.aspx)
 - HTML5 [Session Storage](http://dev.w3.org/html5/webstorage/#the-sessionstorage-attribute)
@@ -41,9 +41,11 @@ possible in order for Evercookie to be effective.
 
 To be implemented someday (perhaps by you?):
 
+- [TLS Session Resumption](https://www.ietf.org/rfc/rfc5077.txt) Identifiers/Tickets (works in Incognito mode)
+- Generating [HTTP Public Key Pinning (HPKP)](https://www.wikiwand.com/en/HTTP_Public_Key_Pinning) certificates per user
+- Caching in [HTTP Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication)
 - Google Gears
 - Using Java to produce a unique key based off of NIC info
-- Caching in [HTTP Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication)
 - Other methods? Please comment!
 
 The Java persistence mechanisms are developed and maintained by [Gabriel Bauman](http://gabrielbauman.com)
