@@ -409,7 +409,7 @@ try{
             (opts.etagCookieName && typeof self._ec.etagData === "undefined") ||
             (opts.cacheCookieName && typeof self._ec.cacheData === "undefined") ||
             (opts.java && typeof self._ec.javaData === "undefined") ||
-            (opts.hsts && self._ec.hstsData === undefined || self.hsts_cookie.is_working()) || 
+            (opts.hsts && (self._ec.hstsData === undefined || self.hsts_cookie.is_working())) || 
             (opts.pngCookieName && document.createElement("canvas").getContext && (typeof self._ec.pngData === "undefined" || self._ec.pngData === "")) ||
             (opts.silverlight && typeof _global_isolated === "undefined")
           ) &&
