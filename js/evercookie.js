@@ -244,6 +244,9 @@ try{
     asseturi: '/assets', // assets = .fla, .jar, etc
     phpuri: '/php', // php file path or route
     authPath: false, //'/evercookie_auth.php', // set to false to disable Basic Authentication cache
+    swfFileName: '/evercookie.swf',
+    xapFileName: '/evercookie.xap',
+    jnlpFileName: '/evercookie.jnlp',
     pngCookieName: 'evercookie_png',
     pngPath: '/evercookie_png.php',
     etagCookieName: 'evercookie_etag',
@@ -270,6 +273,9 @@ try{
    * @param {String} options.asseturi asset path (eg: www.sitename.com/assets use /assets)
    * @param {String} options.phpuri php path/route (eg: www.sitename.com/php use /php)
    * @param {String|Function} options.domain as a string, domain for cookie, as a function, accept window object and return domain string
+   * @param {String} options.swfFileName
+   * @param {String} options.xapFileName
+   * @param {String} options.jnlpFileName
    * @param {String} options.pngCookieName
    * @param {String} options.pngPath
    * @param {String} options.etagCookieName:
@@ -302,6 +308,9 @@ try{
       _ec_asseturi = opts.asseturi,
       _ec_phpuri = opts.phpuri,
       _ec_domain = opts.domain,
+      _ec_swf_file_name = opts.swfFileName,
+      _ec_xap_file_name = opts.xapFileName,
+      _ec_jnlp_file_name = opts.jnlpFileName,
 	  _ec_hsts = opts.hsts;
 
     // private property
@@ -622,7 +631,7 @@ try{
       if (typeof ecApplet === "undefined") {
         dtjava.embed({ 
         	id: "ecApplet",
-        	url: _ec_baseurl + _ec_asseturi + "/evercookie.jnlp", 
+        	url: _ec_baseurl + _ec_asseturi + _ec_jnlp_file_name, 
         	width: "1px", 
         	height: "1px", 
         	placeholder: "ecAppletContainer"
@@ -664,7 +673,7 @@ try{
       params.swliveconnect = "true";
       attributes.id        = "myswf";
       attributes.name      = "myswf";
-      swfobject.embedSWF(_ec_baseurl + _ec_asseturi + "/evercookie.swf", "swfcontainer", "1", "1", "9.0.0", false, flashvars, params, attributes);
+      swfobject.embedSWF(_ec_baseurl + _ec_asseturi + _ec_swf_file_name, "swfcontainer", "1", "1", "9.0.0", false, flashvars, params, attributes);
     };
 
     this.evercookie_png = function (name, value) {
@@ -874,7 +883,7 @@ try{
        * Ok. so, I tried doing this the proper dom way, but IE chokes on appending anything in object tags (including params), so this
        * is the best method I found. Someone really needs to find a less hack-ish way. I hate the look of this shit.
        */
-      var source = _ec_baseurl + _ec_asseturi + "/evercookie.xap",
+      var source = _ec_baseurl + _ec_asseturi + _ec_xap_file_name,
         minver = "4.0.50401.0",
         initParam = "",
         html;
