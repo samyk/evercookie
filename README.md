@@ -5,7 +5,7 @@ Evercookie is a Javascript API that produces extremely persistent cookies in a
 browser. Its goal is to identify a client even after they've removed standard
 cookies, Flash cookies (Local Shared Objects or LSOs), and others.
 
-This is accomplished by storing the cookie data as many browser storage
+This is accomplished by storing the cookie data on as many browser storage
 mechanisms as possible. If cookie data is removed from any of the storage
 mechanisms, evercookie aggressively re-creates it in each mechanism as long as
 one is still intact.
